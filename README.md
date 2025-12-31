@@ -1,6 +1,13 @@
-# Family Nodes
+<p align="center">
+  <img src="public/og.png" alt="Family Nodes" width="100%" />
+</p>
 
-A modern, interactive family tree platform for visualizing and preserving your family history. Build comprehensive family trees with collaborative editing, detailed member profiles, and beautiful visualizations.
+<h1 align="center">Family Nodes</h1>
+
+<p align="center">
+  A modern, interactive family tree platform for visualizing and preserving your family history.<br/>
+  Build comprehensive family trees with collaborative editing, detailed member profiles, and beautiful visualizations.
+</p>
 
 ## Features
 
