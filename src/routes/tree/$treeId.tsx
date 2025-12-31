@@ -14,7 +14,13 @@ import { AppBreadcrumb } from "~/components/AppBreadcrumb";
 import { Button } from "~/components/ui/button";
 import { publicFamilyTreeQueryOptions } from "~/queries/public-family-tree";
 import { PublicFamilyTreeVisualization } from "~/components/PublicFamilyTreeVisualization";
-import { seo } from "~/utils/seo";
+import {
+  seo,
+  canonicalLink,
+  breadcrumbSchema,
+  combineSchemas,
+  SITE_URL,
+} from "~/utils/seo";
 import { toast } from "sonner";
 import type { PublicTreeVisualizationData } from "~/fn/public-family-tree";
 
@@ -29,23 +35,56 @@ export const Route = createFileRoute("/tree/$treeId")({
       return null;
     }
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     // Get tree name from loader data for SEO
     const treeData = loaderData as PublicTreeVisualizationData | null;
     const treeName = treeData?.treeName || "Public Family Tree";
     const memberCount = treeData?.members?.length || 0;
+    const treeUrl = `/tree/${params.treeId}`;
     const description = treeData?.treeDescription
       ? `${treeData.treeDescription} - Explore this public family tree with ${memberCount} members.`
       : `Explore the ${treeName} family tree and discover the family history and connections with ${memberCount} members.`;
 
+    // Generate CreativeWork schema for family tree
+    const familyTreeSchema = {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      name: treeName,
+      description,
+      url: `${SITE_URL}${treeUrl}`,
+      ...(treeData?.treeDescription && { abstract: treeData.treeDescription }),
+      genre: "Genealogy",
+      isAccessibleForFree: true,
+      provider: {
+        "@type": "Organization",
+        name: "Family Nodes",
+        url: SITE_URL,
+      },
+    };
+
     return {
       meta: [
         ...seo({
-          title: `${treeName} | Family Nodes`,
+          title: treeName,
           description,
+          url: treeUrl,
           keywords:
             "family tree, genealogy, family history, public tree, ancestry, family connections",
         }),
+      ],
+      links: [canonicalLink(treeUrl)],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: combineSchemas(
+            familyTreeSchema,
+            breadcrumbSchema([
+              { name: "Home", url: "/" },
+              { name: "Public Trees" },
+              { name: treeName },
+            ])
+          ),
+        },
       ],
     };
   },
@@ -131,7 +170,7 @@ function PublicTreePage() {
     );
   }
 
-  const { tree, members, relationships, marriages, treeName, treeDescription } =
+  const { members, relationships, marriages, treeName, treeDescription } =
     treeData;
 
   return (

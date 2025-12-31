@@ -1,82 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
-import * as React from "react";
 import { Hero } from "~/components/Hero";
 import { BenefitsSection } from "~/components/BenefitsSection";
 import { CurriculumSection } from "~/components/CurriculumSection";
 import { TestimonialsSection } from "~/components/TestimonialsSection";
 import { CommunitySection } from "~/components/CommunitySection";
 import { HowItWorksSection } from "~/components/HowItWorksSection";
-import { FAQSection } from "~/components/FAQSection";
+import { FAQSection, faqs } from "~/components/FAQSection";
 import { FinalCTASection } from "~/components/FinalCTASection";
 import { SectionDivider } from "~/components/SectionDivider";
+import {
+  softwareApplicationSchema,
+  faqSchema,
+  combineSchemas,
+} from "~/utils/seo";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    scripts: [
+      // Structured data for homepage (SoftwareApplication + FAQ)
+      {
+        type: "application/ld+json",
+        children: combineSchemas(
+          softwareApplicationSchema(),
+          faqSchema(faqs)
+        ),
+      },
+    ],
+  }),
   component: Home,
 });
 
 function Home() {
-  useEffect(() => {
-    // Add structured data for SEO
-    const structuredData = {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      name: "Family Nodes",
-      description:
-        "Interactive Family Tree Platform for visualizing and preserving family history",
-      applicationCategory: "Genealogy",
-      url: typeof window !== "undefined" ? window.location.origin : "",
-    };
-
-    const faqStructuredData = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "What is Family Nodes?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Family Nodes is a modern platform that allows you to build and visualize your family tree through an interactive, node-based interface.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How secure is my family data?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "We take your privacy and security very seriously. Your family data is stored securely using industry-standard encryption.",
-          },
-        },
-      ],
-    };
-
-    // Remove existing structured data scripts if any
-    const existingScripts = document.querySelectorAll(
-      'script[type="application/ld+json"]'
-    );
-    existingScripts.forEach((script) => script.remove());
-
-    // Add new structured data
-    const addScript = (data: object) => {
-      const script = document.createElement("script");
-      script.type = "application/ld+json";
-      script.textContent = JSON.stringify(data);
-      document.head.appendChild(script);
-    };
-
-    addScript(structuredData);
-    addScript(faqStructuredData);
-
-    return () => {
-      // Cleanup on unmount
-      const scripts = document.querySelectorAll(
-        'script[type="application/ld+json"]'
-      );
-      scripts.forEach((script) => script.remove());
-    };
-  }, []);
-
   return (
     <div className="flex flex-col min-h-[calc(100vh-3.5rem)] relative">
       {/* Noise Texture */}

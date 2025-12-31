@@ -13,7 +13,14 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
 import { NotFound } from "~/components/NotFound";
 import appCss from "~/styles/app.css?url";
-import { seo } from "~/utils/seo";
+import {
+  seo,
+  canonicalLink,
+  organizationSchema,
+  websiteSchema,
+  combineSchemas,
+  SITE_URL,
+} from "~/utils/seo";
 import { Header } from "~/components/Header";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
@@ -33,19 +40,33 @@ export const Route = createRootRouteWithContext<{
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
+      // Theme color for mobile browsers
+      { name: "theme-color", content: "#18181b" },
+      { name: "msapplication-TileColor", content: "#18181b" },
+      // Author and generator
+      { name: "author", content: "Family Nodes" },
+      { name: "generator", content: "TanStack Start" },
+      // Language
+      { httpEquiv: "content-language", content: "en" },
       ...seo({
         title: "Family Nodes | Interactive Family Tree Platform",
         description:
           "Create, visualize, and share your family history with Family Nodes. Build interactive family trees, connect with relatives, and preserve your family's legacy for generations to come.",
         keywords:
           "family tree, genealogy, family history, ancestry, interactive family tree, family connections, family heritage, genealogy software, family tree builder, ancestry visualization",
+        url: "/",
       }),
     ],
     links: [
+      // Canonical URL (homepage)
+      canonicalLink("/"),
+      // DNS prefetch and preconnect for performance
+      { rel: "dns-prefetch", href: "https://res.cloudinary.com" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" },
       { rel: "stylesheet", href: appCss },
+      // Favicons
       {
         rel: "apple-touch-icon",
         sizes: "180x180",
@@ -63,8 +84,15 @@ export const Route = createRootRouteWithContext<{
         sizes: "16x16",
         href: "/favicon-16x16.png",
       },
-      { rel: "manifest", href: "/site.webmanifest", color: "#fffff" },
+      { rel: "manifest", href: "/site.webmanifest" },
       { rel: "icon", href: "/favicon.ico" },
+    ],
+    scripts: [
+      // Structured data (JSON-LD) for Organization and WebSite
+      {
+        type: "application/ld+json",
+        children: combineSchemas(organizationSchema(), websiteSchema()),
+      },
     ],
   }),
   errorComponent: (props) => {

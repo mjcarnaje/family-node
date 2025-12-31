@@ -32,6 +32,13 @@ const signInSchema = z.object({
 type SignInForm = z.infer<typeof signInSchema>;
 
 export const Route = createFileRoute("/sign-in")({
+  head: () => ({
+    meta: [
+      { title: "Sign In | Family Nodes" },
+      { name: "description", content: "Sign in to your Family Nodes account to access your family trees and continue preserving your family history." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: search.redirect as string | undefined,

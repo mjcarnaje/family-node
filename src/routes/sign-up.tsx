@@ -25,6 +25,13 @@ const signUpSchema = z.object({
 type SignUpForm = z.infer<typeof signUpSchema>;
 
 export const Route = createFileRoute("/sign-up")({
+  head: () => ({
+    meta: [
+      { title: "Create Account | Family Nodes" },
+      { name: "description", content: "Create a free Family Nodes account to start building your family tree and preserving your family history for future generations." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: search.redirect as string | undefined,

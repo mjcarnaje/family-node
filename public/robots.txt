@@ -1,0 +1,21 @@
+# robots.txt for Family Nodes
+# https://familynodes.com
+
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /unauthenticated
+Disallow: /invitation/
+Disallow: /api/
+
+# Allow search engines to crawl public content
+Allow: /tree/
+Allow: /profile/
+
+# Sitemap location
+Sitemap: https://familynodes.com/sitemap/xml
+
+# Crawl delay (optional, be kind to servers)
+Crawl-delay: 1

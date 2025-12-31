@@ -8,10 +8,64 @@ import { Button } from "~/components/ui/button";
 import { Panel, PanelContent } from "~/components/ui/panel";
 import { publicProfileQueryOptions } from "~/queries/profiles";
 import { authClient } from "~/lib/auth-client";
+import {
+  seo,
+  canonicalLink,
+  personSchema,
+  breadcrumbSchema,
+  combineSchemas,
+} from "~/utils/seo";
+import type { PublicProfile } from "~/data-access/profiles";
 
 export const Route = createFileRoute("/profile/$userId/")({
   loader: async ({ context: { queryClient }, params: { userId } }) => {
-    await queryClient.prefetchQuery(publicProfileQueryOptions(userId));
+    try {
+      const data = await queryClient.fetchQuery(publicProfileQueryOptions(userId));
+      return data;
+    } catch {
+      return null;
+    }
+  },
+  head: ({ loaderData, params }) => {
+    const profileData = loaderData as PublicProfile | null;
+    const userName = profileData?.user?.name || "User Profile";
+    const userBio = profileData?.profile?.bio;
+    const userId = params.userId;
+    const profileUrl = `/profile/${userId}`;
+
+    const description = userBio
+      ? `${userBio.slice(0, 150)}${userBio.length > 150 ? "..." : ""}`
+      : `View ${userName}'s profile on Family Nodes. Connect with family members and explore their family history.`;
+
+    return {
+      meta: [
+        ...seo({
+          title: userName,
+          description,
+          url: profileUrl,
+          type: "profile",
+          keywords: `${userName}, family profile, family tree, genealogy, Family Nodes`,
+        }),
+      ],
+      links: [canonicalLink(profileUrl)],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: combineSchemas(
+            personSchema({
+              name: userName,
+              url: profileUrl,
+              description: userBio ?? undefined,
+            }),
+            breadcrumbSchema([
+              { name: "Home", url: "/" },
+              { name: "Profiles" },
+              { name: userName },
+            ])
+          ),
+        },
+      ],
+    };
   },
   component: Profile,
 });

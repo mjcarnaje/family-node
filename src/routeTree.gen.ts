@@ -16,6 +16,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as TreeTreeIdRouteImport } from './routes/tree/$treeId'
+import { Route as SitemapXmlRouteImport } from './routes/sitemap.xml'
 import { Route as InvitationTokenRouteImport } from './routes/invitation/$token'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard/analytics'
@@ -70,6 +71,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 const TreeTreeIdRoute = TreeTreeIdRouteImport.update({
   id: '/tree/$treeId',
   path: '/tree/$treeId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapXmlRoute = SitemapXmlRouteImport.update({
+  id: '/sitemap/xml',
+  path: '/sitemap/xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvitationTokenRoute = InvitationTokenRouteImport.update({
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/invitation/$token': typeof InvitationTokenRoute
+  '/sitemap/xml': typeof SitemapXmlRoute
   '/tree/$treeId': typeof TreeTreeIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/invitation/$token': typeof InvitationTokenRoute
+  '/sitemap/xml': typeof SitemapXmlRoute
   '/tree/$treeId': typeof TreeTreeIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/invitation/$token': typeof InvitationTokenRoute
+  '/sitemap/xml': typeof SitemapXmlRoute
   '/tree/$treeId': typeof TreeTreeIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -274,6 +283,7 @@ export interface FileRouteTypes {
     | '/dashboard/analytics'
     | '/dashboard/settings'
     | '/invitation/$token'
+    | '/sitemap/xml'
     | '/tree/$treeId'
     | '/dashboard/'
     | '/api/auth/$'
@@ -302,6 +312,7 @@ export interface FileRouteTypes {
     | '/dashboard/analytics'
     | '/dashboard/settings'
     | '/invitation/$token'
+    | '/sitemap/xml'
     | '/tree/$treeId'
     | '/dashboard'
     | '/api/auth/$'
@@ -331,6 +342,7 @@ export interface FileRouteTypes {
     | '/dashboard/analytics'
     | '/dashboard/settings'
     | '/invitation/$token'
+    | '/sitemap/xml'
     | '/tree/$treeId'
     | '/dashboard/'
     | '/api/auth/$'
@@ -359,6 +371,7 @@ export interface RootRouteChildren {
   SignUpRoute: typeof SignUpRoute
   UnauthenticatedRoute: typeof UnauthenticatedRoute
   InvitationTokenRoute: typeof InvitationTokenRoute
+  SitemapXmlRoute: typeof SitemapXmlRoute
   TreeTreeIdRoute: typeof TreeTreeIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ProfileUserIdIndexRoute: typeof ProfileUserIdIndexRoute
@@ -419,6 +432,13 @@ declare module '@tanstack/react-router' {
       path: '/tree/$treeId'
       fullPath: '/tree/$treeId'
       preLoaderRoute: typeof TreeTreeIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap/xml': {
+      id: '/sitemap/xml'
+      path: '/sitemap/xml'
+      fullPath: '/sitemap/xml'
+      preLoaderRoute: typeof SitemapXmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invitation/$token': {
@@ -616,6 +636,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignUpRoute: SignUpRoute,
   UnauthenticatedRoute: UnauthenticatedRoute,
   InvitationTokenRoute: InvitationTokenRoute,
+  SitemapXmlRoute: SitemapXmlRoute,
   TreeTreeIdRoute: TreeTreeIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ProfileUserIdIndexRoute: ProfileUserIdIndexRoute,

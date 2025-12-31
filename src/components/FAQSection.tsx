@@ -6,7 +6,7 @@ import {
 } from "~/components/ui/accordion";
 import { FadeIn } from "~/components/ui/fade-in";
 
-const faqs = [
+export const faqs = [
   {
     question: "What is Family Nodes?",
     answer: "Family Nodes is a modern platform that allows you to build and visualize your family tree through an interactive, node-based interface. It's designed to make exploring your family history intuitive and engaging, while allowing you to preserve stories and media for future generations.",
