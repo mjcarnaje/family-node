@@ -15,15 +15,16 @@ Before deploying, ensure you have:
 
 Your application requires the following environment variables:
 
-| Variable                        | Required | Description                                               |
-| ------------------------------- | -------- | --------------------------------------------------------- |
-| `DATABASE_URL`                  | Yes      | PostgreSQL connection string                              |
-| `BETTER_AUTH_SECRET`            | Yes      | Secret key for authentication (min 32 chars)              |
-| `VITE_BETTER_AUTH_URL`          | Yes      | Your production URL (e.g., `https://your-app.vercel.app`) |
-| `VITE_CLOUDINARY_CLOUD_NAME`    | Yes      | Your Cloudinary cloud name                                |
-| `VITE_CLOUDINARY_UPLOAD_PRESET` | Yes      | Cloudinary unsigned upload preset                         |
-| `GOOGLE_CLIENT_ID`              | No       | Google OAuth client ID (optional)                         |
-| `GOOGLE_CLIENT_SECRET`          | No       | Google OAuth client secret (optional)                     |
+| Variable                | Required | Description                                               |
+| ----------------------- | -------- | --------------------------------------------------------- |
+| `DATABASE_URL`          | Yes      | PostgreSQL connection string                              |
+| `BETTER_AUTH_SECRET`    | Yes      | Secret key for authentication (min 32 chars)              |
+| `VITE_BETTER_AUTH_URL`  | Yes      | Your production URL (e.g., `https://your-app.vercel.app`) |
+| `CLOUDINARY_CLOUD_NAME` | Yes      | Your Cloudinary cloud name                                |
+| `CLOUDINARY_API_KEY`    | Yes      | Cloudinary API key (for server-side uploads)              |
+| `CLOUDINARY_API_SECRET` | Yes      | Cloudinary API secret (for server-side uploads)           |
+| `GOOGLE_CLIENT_ID`      | No       | Google OAuth client ID (optional)                         |
+| `GOOGLE_CLIENT_SECRET`  | No       | Google OAuth client secret (optional)                     |
 
 ## Step 1: Set Up Neon PostgreSQL
 
@@ -37,12 +38,13 @@ Your application requires the following environment variables:
 
 1. Go to [cloudinary.com](https://cloudinary.com) and create an account
 2. From your dashboard, note your **Cloud Name**
-3. Go to **Settings** → **Upload** → **Upload presets**
-4. Create a new unsigned upload preset:
-   - Click "Add upload preset"
-   - Set **Signing Mode** to "Unsigned"
-   - Note the preset name (e.g., `public`)
-5. Save the cloud name and preset name for the `VITE_CLOUDINARY_*` variables
+3. Go to **Settings** → **Security** to find your **API Key** and **API Secret**
+4. Save the following for your environment variables:
+   - Cloud name → `CLOUDINARY_CLOUD_NAME`
+   - API Key → `CLOUDINARY_API_KEY`
+   - API Secret → `CLOUDINARY_API_SECRET`
+
+> **Note**: This application uses server-side uploads, so you don't need to create an unsigned upload preset. All uploads are handled securely through the server.
 
 ## Step 3: Deploy to Vercel
 
@@ -81,8 +83,9 @@ vercel
 vercel env add DATABASE_URL
 vercel env add BETTER_AUTH_SECRET
 vercel env add VITE_BETTER_AUTH_URL
-vercel env add VITE_CLOUDINARY_CLOUD_NAME
-vercel env add VITE_CLOUDINARY_UPLOAD_PRESET
+vercel env add CLOUDINARY_CLOUD_NAME
+vercel env add CLOUDINARY_API_KEY
+vercel env add CLOUDINARY_API_SECRET
 
 # Deploy to production
 vercel --prod
@@ -145,8 +148,9 @@ Update your `package.json` build script to include migrations:
 
 ### Image Upload Errors
 
-- Verify your Cloudinary upload preset is set to "Unsigned"
+- Verify your Cloudinary API credentials are correct
 - Check that the cloud name matches your Cloudinary account
+- Ensure `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` are set correctly
 
 ### Build Failures
 

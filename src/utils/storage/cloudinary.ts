@@ -1,4 +1,4 @@
-import { publicEnv } from "~/config/publicEnv";
+import { uploadFileFn } from "~/fn/cloudinary-upload";
 
 export interface CloudinaryUploadProgress {
   loaded: number;
@@ -24,7 +24,8 @@ export interface CloudinaryUploadOptions {
 }
 
 /**
- * Upload a file to Cloudinary using unsigned upload
+ * Upload a file to Cloudinary using server-side API
+ * Converts file to base64 and sends to server function
  */
 export async function uploadToCloudinary(
   file: File,
@@ -32,86 +33,81 @@ export async function uploadToCloudinary(
 ): Promise<CloudinaryUploadResult> {
   const { folder, resourceType = "auto", onProgress } = options;
 
-  const cloudName = publicEnv.CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = publicEnv.CLOUDINARY_UPLOAD_PRESET;
+  // Convert file to base64
+  const base64 = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("Failed to read file"));
+      }
+    };
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
 
-  const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", uploadPreset);
-
-  if (folder) {
-    formData.append("folder", folder);
+  // Simulate progress for compatibility
+  if (onProgress) {
+    // Simulate progress since we can't track server-side upload progress easily
+    onProgress({ loaded: file.size * 0.5, total: file.size, percentage: 50 });
   }
 
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable && onProgress) {
-        onProgress({
-          loaded: event.loaded,
-          total: event.total,
-          percentage: Math.round((event.loaded / event.total) * 100),
-        });
-      }
-    };
-
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          const response = JSON.parse(xhr.responseText);
-          resolve({
-            publicId: response.public_id,
-            secureUrl: response.secure_url,
-            format: response.format,
-            resourceType: response.resource_type,
-            bytes: response.bytes,
-            width: response.width,
-            height: response.height,
-            duration: response.duration,
-          });
-        } catch {
-          reject(new Error("Failed to parse Cloudinary response"));
-        }
-      } else {
-        try {
-          const error = JSON.parse(xhr.responseText);
-          reject(
-            new Error(error.error?.message || `Upload failed: ${xhr.statusText}`)
-          );
-        } catch {
-          reject(new Error(`Upload failed: ${xhr.statusText}`));
-        }
-      }
-    };
-
-    xhr.onerror = () => {
-      reject(new Error("Upload failed: Network error"));
-    };
-
-    xhr.open("POST", url);
-    xhr.send(formData);
+  // Upload via server function
+  const result = await uploadFileFn({
+    data: {
+      file: base64,
+      fileName: file.name,
+      folder,
+      resourceType: resourceType === "auto" ? undefined : resourceType,
+    },
   });
+
+  if (onProgress) {
+    onProgress({ loaded: file.size, total: file.size, percentage: 100 });
+  }
+
+  return {
+    publicId: result.publicId,
+    secureUrl: result.secureUrl,
+    format: result.format,
+    resourceType: result.resourceType,
+    bytes: result.bytes,
+    width: result.width,
+    height: result.height,
+    duration: result.duration,
+  };
 }
 
 /**
  * Generate a Cloudinary URL with optional transformations
+ * Note: Cloud name is extracted from the publicId or secureUrl
  */
 export function getCloudinaryUrl(
   publicId: string,
   options: {
     resourceType?: "image" | "video";
     transformation?: string;
+    cloudName?: string;
   } = {}
 ): string {
-  const { resourceType = "image", transformation } = options;
-  const cloudName = publicEnv.CLOUDINARY_CLOUD_NAME;
+  const { resourceType = "image", transformation, cloudName } = options;
+  
+  // If cloudName is provided, use it; otherwise extract from publicId if it's a full URL
+  let baseUrl = `https://res.cloudinary.com`;
+  if (cloudName) {
+    baseUrl = `https://res.cloudinary.com/${cloudName}`;
+  } else if (publicId.startsWith("http")) {
+    // Extract cloud name from URL
+    const match = publicId.match(/res\.cloudinary\.com\/([^/]+)/);
+    if (match) {
+      baseUrl = `https://res.cloudinary.com/${match[1]}`;
+    }
+  }
 
   const transformPart = transformation ? `${transformation}/` : "";
 
-  return `https://res.cloudinary.com/${cloudName}/${resourceType}/upload/${transformPart}${publicId}`;
+  return `${baseUrl}/${resourceType}/upload/${transformPart}${publicId}`;
 }
 
 /**
@@ -123,10 +119,10 @@ export function getOptimizedImageUrl(
     width?: number;
     height?: number;
     crop?: "fill" | "fit" | "scale" | "thumb";
+    cloudName?: string;
   } = {}
 ): string {
-  const { width, height, crop = "fill" } = options;
-  const cloudName = publicEnv.CLOUDINARY_CLOUD_NAME;
+  const { width, height, crop = "fill", cloudName } = options;
 
   const transforms: string[] = ["f_auto", "q_auto"];
 
@@ -136,5 +132,9 @@ export function getOptimizedImageUrl(
 
   const transformPart = transforms.join(",");
 
-  return `https://res.cloudinary.com/${cloudName}/image/upload/${transformPart}/${publicId}`;
+  return getCloudinaryUrl(publicId, {
+    resourceType: "image",
+    transformation: transformPart,
+    cloudName,
+  });
 }
