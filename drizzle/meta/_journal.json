@@ -43,6 +43,20 @@
       "when": 1767091403163,
       "tag": "0005_plain_rachel_grey",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1767091800000,
+      "tag": "0006_remove_subscriptions",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1767092400000,
+      "tag": "0007_cloudinary_migration",
+      "breakpoints": true
     }
   ]
 }
