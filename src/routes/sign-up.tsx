@@ -64,7 +64,7 @@ function RouteComponent() {
         if (redirect) {
           window.location.href = redirect;
         } else {
-          router.navigate({ to: "/" });
+          router.navigate({ to: "/dashboard" });
         }
       }
     } catch (err) {

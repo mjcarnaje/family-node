@@ -147,7 +147,7 @@ export function SubscriptionStatus({
         {plan === "free" && (
           <div className="bg-muted/50 rounded-lg p-3">
             <p className="text-sm text-muted-foreground">
-              You're currently on the free plan. Upgrade to unlock more features and increase your limits.
+              Family Node is completely free! Enjoy unlimited family trees, unlimited members, and all features at no cost.
             </p>
           </div>
         )}

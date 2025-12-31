@@ -25,11 +25,11 @@ const faqs = [
   },
   {
     question: "How much does it cost?",
-    answer: "Family Node offers multiple tiers to suit your needs. We have a Free plan for basic tree building, and Basic/Pro plans that offer increased member limits, more storage for media, and advanced visualization features.",
+    answer: "Family Node is completely free! There are no subscriptions, no hidden fees, and no limits. Build unlimited family trees with unlimited members, upload unlimited media, and enjoy all features at no cost.",
   },
   {
     question: "Is there a limit to how many people I can add?",
-    answer: "Our Free plan allows you to add up to 50 family members. Our Basic and Pro plans offer significantly higher limits, with the Pro plan supporting thousands of members for extensive family histories.",
+    answer: "No limits at all! You can add as many family members as you need, create multiple family trees, upload unlimited photos and documents, and use all features without any restrictions. Everything is free, forever.",
   },
   {
     question: "How do I start building my tree?",

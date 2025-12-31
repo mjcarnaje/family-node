@@ -43,7 +43,7 @@ export function Footer() {
                   to="/"
                   className="hover:text-foreground transition-colors"
                 >
-                  Pricing
+                  Features
                 </Link>
               </li>
               <li>
@@ -129,9 +129,22 @@ export function Footer() {
               <Network className="h-6 w-6 text-primary" />
               <span className="font-heading font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Family Node</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              © 2025 Family Node. All rights reserved.
-            </p>
+            <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
+              <p className="text-sm text-muted-foreground">
+                © 2025 Family Node. All rights reserved.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Made by{" "}
+                <a
+                  href="https://mjcarnaje.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline font-medium"
+                >
+                  mj carnaje
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </div>
