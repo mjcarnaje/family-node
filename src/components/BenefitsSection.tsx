@@ -81,13 +81,30 @@ export function BenefitsSection() {
                <h3 className="text-2xl font-bold text-foreground mb-4">Preserve Your Legacy</h3>
                <p className="text-muted-foreground mb-8">Save stories, photos, and key life events. Ensure your family's history is never forgotten.</p>
                
-               <div className="mt-auto bg-slate-950 p-4 rounded-lg border border-border font-mono text-xs text-slate-300 overflow-hidden shadow-inner group-hover:border-primary/30 transition-colors">
-                  <div className="opacity-70 select-none space-y-1">
-                    <p><span className="text-purple-400">family</span> add --member <span className="text-green-400">"Grandfather Joe"</span></p>
-                    <p><span className="text-purple-400">family</span> connect --parent <span className="text-green-400">"Grandfather Joe"</span></p>
-                    <p className="text-slate-500">Creating relationship node...</p>
-                    <p className="text-slate-500">Auto-organizing tree layout...</p>
-                    <p className="text-green-400">Success: Legacy node updated.</p>
+               {/* Family Tree Illustration */}
+               <div className="mt-auto bg-muted/50 p-4 rounded-lg border border-border overflow-hidden group-hover:border-primary/30 transition-colors">
+                  <div className="flex flex-col items-center gap-2">
+                    {/* Grandparents Level */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-purple-500/20 border-2 border-purple-500/50 flex items-center justify-center">
+                        <Users className="h-4 w-4 text-purple-500" />
+                      </div>
+                      <Heart className="h-3 w-3 text-red-400" />
+                      <div className="w-10 h-10 rounded-full bg-purple-500/20 border-2 border-purple-500/50 flex items-center justify-center">
+                        <Users className="h-4 w-4 text-purple-500" />
+                      </div>
+                    </div>
+                    {/* Connector Line */}
+                    <div className="h-4 w-px bg-border"></div>
+                    {/* Parents Level */}
+                    <div className="flex items-center gap-6">
+                      <div className="w-8 h-8 rounded-full bg-blue-500/20 border-2 border-blue-500/50 flex items-center justify-center">
+                        <Users className="h-3 w-3 text-blue-500" />
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-blue-500/20 border-2 border-blue-500/50 flex items-center justify-center">
+                        <Users className="h-3 w-3 text-blue-500" />
+                      </div>
+                    </div>
                   </div>
                </div>
             </div>

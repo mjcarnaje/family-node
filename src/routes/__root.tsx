@@ -90,6 +90,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const routerState = useRouterState();
   const prevPathnameRef = React.useRef("");
 
+  // Hide footer on dashboard routes
+  const isDashboard = routerState.location.pathname.startsWith("/dashboard");
+
   React.useEffect(() => {
     const currentPathname = routerState.location.pathname;
     const pathnameChanged = prevPathnameRef.current !== currentPathname;
@@ -165,13 +168,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-          <div className="min-h-screen bg-background pb-20">
+          <div className={`min-h-screen bg-background ${isDashboard ? "" : "pb-20"}`}>
             <Header />
             <main>{children}</main>
-            <Footer />
+            {!isDashboard && <Footer />}
           </div>
-          <TanStackRouterDevtools position="bottom-right" />
-          <ReactQueryDevtools buttonPosition="bottom-left" />
+          {import.meta.env.DEV && (
+            <>
+              <TanStackRouterDevtools position="bottom-right" />
+              <ReactQueryDevtools buttonPosition="bottom-left" />
+            </>
+          )}
           <Toaster />
           <Scripts />
         </ThemeProvider>

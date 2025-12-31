@@ -59,11 +59,11 @@ export function CurriculumSection() {
       
       <div className="container mx-auto px-4 relative z-10">
         <FadeIn>
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16">
+          <div className="flex flex-col items-start mb-16">
              <div className="max-w-2xl">
-               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-mono mb-4 border border-blue-500/20">
-                 <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                 PLATFORM_CAPABILITIES
+               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium mb-4 border border-blue-500/20">
+                 <Network className="h-3 w-3" />
+                 Key Features
                </div>
                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl text-foreground mb-4">
                  Core <span className="text-blue-600 dark:text-blue-400">Features</span>
@@ -71,13 +71,6 @@ export function CurriculumSection() {
                <p className="text-lg text-muted-foreground leading-relaxed">
                  Master your family history with powerful tools designed for modern genealogy.
                </p>
-             </div>
-             
-             <div className="hidden md:block">
-               <div className="text-right font-mono text-xs text-muted-foreground">
-                 <p>v1.0.0 Launched</p>
-                 <p>Latest Standards</p>
-               </div>
              </div>
           </div>
         </FadeIn>
@@ -92,11 +85,10 @@ export function CurriculumSection() {
                     {/* Top Accent Line */}
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/0 via-blue-500/50 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center mb-8">
                       <div className="rounded-lg bg-muted p-3 group-hover:bg-blue-500/20 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         <Icon className="h-6 w-6 text-muted-foreground" />
                       </div>
-                      <div className="font-mono text-xs text-muted-foreground">0{index + 1}</div>
                     </div>
                     
                     <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{category.title}</h3>
@@ -105,10 +97,10 @@ export function CurriculumSection() {
                     </p>
                     
                     <div className="mt-auto space-y-3">
-                      <div className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-2">Capabilities:</div>
+                      <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Includes:</div>
                       <div className="flex flex-wrap gap-2">
                         {category.technologies.map((tech) => (
-                          <span key={tech} className="text-xs font-mono py-1 px-2 rounded bg-muted text-muted-foreground border border-border">
+                          <span key={tech} className="text-xs py-1 px-2 rounded-md bg-muted text-muted-foreground border border-border">
                             {tech}
                           </span>
                         ))}
