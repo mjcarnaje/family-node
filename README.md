@@ -1,16 +1,17 @@
-# Full Stack Campus
+# Family Node
 
-An online community and training platform for aspiring full stack engineers. Master frontend and backend development, build real-world projects, and launch your software engineering career.
+A modern, interactive family tree platform for visualizing and preserving your family history. Build comprehensive family trees with collaborative editing, detailed member profiles, and beautiful visualizations.
 
 ## Features
 
-- **Community Posts** - Create posts, comment, react, and share media attachments
-- **User Profiles** - Showcase your skills and portfolio
-- **Calendar Events** - Community calendar and event management
-- **Messaging** - Private messaging between community members
-- **Members Directory** - Discover and connect with other members
-- **Notifications** - Stay updated with real-time notifications
-- **Classroom Modules** - Educational content and learning modules
+- **Interactive Family Tree Visualization** - Node-based interface with zoom, pan, and auto-layout
+- **Member Management** - Detailed profiles with life events, media galleries, and notes
+- **Collaborative Editing** - Real-time collaboration with role-based permissions
+- **Tree Sharing** - Public or private trees with secure invitations
+- **Relationship Tracking** - Parent-child relationships, marriages, and sibling connections
+- **Media Management** - Upload and organize photos and documents
+- **Genealogy Import** - Import GEDCOM files to quickly build your tree
+- **Search & Discovery** - Full-text search across family members and events
 
 All features are completely free with unlimited access.
 
@@ -35,7 +36,7 @@ All features are completely free with unlimited access.
 
 ```bash
 git clone <repository-url>
-cd automaker-starter-kit
+cd family-node
 ```
 
 ### 2. Install dependencies
@@ -70,14 +71,14 @@ npm run db:migrate
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`
+The application will be available at `http://localhost:3004`
 
 ## Available Scripts
 
 ### Development
 
 ```bash
-npm run dev          # Start development server on port 3000
+npm run dev          # Start development server on port 3004
 npm run build        # Build for production (includes type checking)
 npm run start        # Start production server
 ```
@@ -112,10 +113,11 @@ Comprehensive documentation is available in the `docs/` folder:
 
 - **[Architecture](./docs/architecture.md)** - Code organization and layered architecture
 - **[Authentication](./docs/authentication.md)** - Authentication setup and implementation
+- **[Deployment](./docs/deployment.md)** - Production deployment guide (Vercel, Railway, Docker)
 - **[TanStack Start](./docs/tanstack.md)** - Technical implementation details for routes and server functions
 - **[UX Guidelines](./docs/ux.md)** - User experience guidelines for consistency
 - **[File Uploads](./docs/file-uploads.md)** - File upload implementation details
-- **[Feature Roadmap](./docs/features/todo/00-feature-roadmap.md)** - Complete feature roadmap
+- **[Theme](./docs/theme.md)** - Theming and styling guidelines
 
 ## Architecture Patterns
 
@@ -124,13 +126,19 @@ Comprehensive documentation is available in the `docs/` folder:
 - **File Uploads**: Direct uploads to Cloudinary (unsigned, client-side)
 - **Type Safety**: Full TypeScript with Drizzle ORM schema inference
 
-## Contributing
+## Deployment
 
-This project follows a feature-driven development approach. Features are organized into epics and can be found in `docs/features/`. Each feature is designed to be completed in approximately one day (2-8 hours).
+This application is optimized for deployment on **Vercel** (recommended) or Railway. See the [Deployment Guide](./docs/deployment.md) for detailed instructions.
+
+**Quick Deploy to Vercel:**
+1. Push your code to GitHub
+2. Import the repository in Vercel
+3. Add environment variables (see deployment guide)
+4. Deploy!
 
 ## License
 
-[Add your license here]
+See [LICENSE](./LICENSE) file for details.
 
 ## Links
 
