@@ -78,7 +78,7 @@ function RouteComponent() {
     <div className="container mx-auto relative min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0 bg-background">
       <aside
         className="relative hidden h-full flex-col bg-muted/30 p-12 text-foreground lg:flex border-r border-border overflow-hidden"
-        aria-label="Family Node branding and information"
+        aria-label="Family Nodes branding and information"
         role="complementary"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5" />
@@ -93,7 +93,7 @@ function RouteComponent() {
             <Network className="h-6 w-6 text-primary" />
           </div>
           <h1 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Family Node
+            Family Nodes
           </h1>
         </header>
 
@@ -174,7 +174,7 @@ function RouteComponent() {
               Create Account
             </h1>
             <p className="text-sm text-muted-foreground font-sans">
-              Join Family Node and start building your tree
+              Join Family Nodes and start building your tree
             </p>
           </div>
           

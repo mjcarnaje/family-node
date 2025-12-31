@@ -121,7 +121,7 @@ export function generateInvitationEmailHtml(data: InvitationEmailData): string {
                 You're Invited!
               </h1>
               <p style="margin: 10px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 16px;">
-                Join a family tree on Family Node
+                Join a family tree on Family Nodes
               </p>
             </td>
           </tr>
@@ -171,7 +171,7 @@ export function generateInvitationEmailHtml(data: InvitationEmailData): string {
                 If you weren't expecting this invitation, you can safely ignore this email.
               </p>
               <p style="margin: 0; color: #999999; font-size: 12px; text-align: center;">
-                Family Node - Connect with your family history
+                Family Nodes - Connect with your family history
               </p>
             </td>
           </tr>
@@ -217,6 +217,6 @@ Note: This invitation expires on ${expirationDate}.
 If you weren't expecting this invitation, you can safely ignore this email.
 
 ---
-Family Node - Connect with your family history
+Family Nodes - Connect with your family history
   `.trim();
 }

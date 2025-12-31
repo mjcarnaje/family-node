@@ -34,9 +34,9 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       ...seo({
-        title: "Family Node | Interactive Family Tree Platform",
+        title: "Family Nodes | Interactive Family Tree Platform",
         description:
-          "Create, visualize, and share your family history with Family Node. Build interactive family trees, connect with relatives, and preserve your family's legacy for generations to come.",
+          "Create, visualize, and share your family history with Family Nodes. Build interactive family trees, connect with relatives, and preserve your family's legacy for generations to come.",
         keywords:
           "family tree, genealogy, family history, ancestry, interactive family tree, family connections, family heritage, genealogy software, family tree builder, ancestry visualization",
       }),

@@ -19,7 +19,7 @@ test.describe("Tree Sharing Permissions", () => {
 
   test("should display the home page", async ({ page }) => {
     // Verify the page loads
-    await expect(page).toHaveTitle(/Family Node|Family Tree/i);
+    await expect(page).toHaveTitle(/Family Nodes|Family Tree/i);
   });
 
   test("should have sign in option for non-authenticated users", async ({ page }) => {

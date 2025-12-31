@@ -1,8 +1,8 @@
 services:
-  family-node:
+  family-nodes:
     image: postgres:17
     restart: always
-    container_name: family-node-db
+    container_name: family-nodes-db
     ports:
       - 5432:5432
     environment:

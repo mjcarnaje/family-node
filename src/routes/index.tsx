@@ -21,7 +21,7 @@ function Home() {
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      name: "Family Node",
+      name: "Family Nodes",
       description:
         "Interactive Family Tree Platform for visualizing and preserving family history",
       applicationCategory: "Genealogy",
@@ -34,10 +34,10 @@ function Home() {
       mainEntity: [
         {
           "@type": "Question",
-          name: "What is Family Node?",
+          name: "What is Family Nodes?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Family Node is a modern platform that allows you to build and visualize your family tree through an interactive, node-based interface.",
+            text: "Family Nodes is a modern platform that allows you to build and visualize your family tree through an interactive, node-based interface.",
           },
         },
         {

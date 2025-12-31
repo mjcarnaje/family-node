@@ -9,7 +9,7 @@ const testimonials = [
     role: "Family Historian",
     discovery: "Found 4 generations",
     image: "SC",
-    quote: "Family Node made it so easy to visualize my family's journey. I finally connected the dots between my great-grandparents' stories and our current generation.",
+    quote: "Family Nodes made it so easy to visualize my family's journey. I finally connected the dots between my great-grandparents' stories and our current generation.",
     rating: 5,
   },
   {
@@ -41,7 +41,7 @@ const testimonials = [
     role: "Heritage Researcher",
     discovery: "Traced back to 1750",
     image: "JM",
-    quote: "I've used many genealogy tools, but Family Node is the most intuitive. The automatic organization keeps everything tidy even as the tree grows complex.",
+    quote: "I've used many genealogy tools, but Family Nodes is the most intuitive. The automatic organization keeps everything tidy even as the tree grows complex.",
     rating: 5,
   },
   {
@@ -74,7 +74,7 @@ export function TestimonialsSection() {
               Shared <span className="text-gradient-primary">Experiences</span>
             </h2>
             <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl leading-relaxed">
-              Discover how families are using Family Node to preserve their heritage 
+              Discover how families are using Family Nodes to preserve their heritage 
               and connect with their roots.
             </p>
           </div>

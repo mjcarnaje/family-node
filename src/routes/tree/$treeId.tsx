@@ -41,7 +41,7 @@ export const Route = createFileRoute("/tree/$treeId")({
     return {
       meta: [
         ...seo({
-          title: `${treeName} | Family Node`,
+          title: `${treeName} | Family Nodes`,
           description,
           keywords:
             "family tree, genealogy, family history, public tree, ancestry, family connections",

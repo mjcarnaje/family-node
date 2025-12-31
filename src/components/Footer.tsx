@@ -127,11 +127,11 @@ export function Footer() {
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="flex items-center space-x-2">
               <Network className="h-6 w-6 text-primary" />
-              <span className="font-heading font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Family Node</span>
+              <span className="font-heading font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Family Nodes</span>
             </div>
             <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
               <p className="text-sm text-muted-foreground">
-                © 2025 Family Node. All rights reserved.
+                © 2025 Family Nodes. All rights reserved.
               </p>
               <p className="text-sm text-muted-foreground">
                 Made by{" "}

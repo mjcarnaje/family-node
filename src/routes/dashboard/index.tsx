@@ -210,7 +210,7 @@ function DashboardHome() {
                   <Sparkles className="h-8 w-8 text-primary" />
                 </div>
                 <h2 className="text-xl font-semibold mb-2">
-                  Get Started with Family Node
+                  Get Started with Family Nodes
                 </h2>
                 <p className="text-muted-foreground mb-6">
                   Create your first family tree to start documenting your family

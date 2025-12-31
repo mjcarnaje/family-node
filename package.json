@@ -1,10 +1,10 @@
 {
-  "name": "family-node",
+  "name": "family-nodes",
   "private": true,
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "[ ! -f .env ] && cp .env.example .env || true && docker compose up -d && until docker exec family-node-db pg_isready -U postgres > /dev/null 2>&1; do echo 'Waiting for postgres...'; sleep 1; done && npm run db:migrate && vite dev --port 3004",
+    "dev": "[ ! -f .env ] && cp .env.example .env || true && docker compose up -d && until docker exec family-nodes-db pg_isready -U postgres > /dev/null 2>&1; do echo 'Waiting for postgres...'; sleep 1; done && npm run db:migrate && vite dev --port 3004",
     "dev:app": "vite dev",
     "build": "vite build && tsc --noEmit",
     "start": "node .output/server/index.mjs",

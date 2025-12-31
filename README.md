@@ -1,4 +1,4 @@
-# Family Node
+# Family Nodes
 
 A modern, interactive family tree platform for visualizing and preserving your family history. Build comprehensive family trees with collaborative editing, detailed member profiles, and beautiful visualizations.
 
@@ -36,7 +36,7 @@ All features are completely free with unlimited access.
 
 ```bash
 git clone <repository-url>
-cd family-node
+cd family-nodes
 ```
 
 ### 2. Install dependencies

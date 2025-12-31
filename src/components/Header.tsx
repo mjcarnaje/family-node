@@ -17,7 +17,7 @@ function Logo({ className }: { className?: string }) {
   return (
     <img
       src="/icon.svg"
-      alt="Family Node"
+      alt="Family Nodes"
       className={className}
     />
   );
@@ -93,7 +93,7 @@ export function Header() {
           <Link to="/" className="flex items-center gap-2 group">
             <Logo className="h-6 w-6 shrink-0 transition-transform group-hover:scale-105" />
             <span className="hidden font-heading font-bold text-sm sm:inline-block whitespace-nowrap leading-none">
-              Family Node
+              Family Nodes
             </span>
           </Link>
 
@@ -187,7 +187,7 @@ export function Header() {
               >
                 <Logo className="h-7 w-7 shrink-0" />
                 <span className="font-heading font-bold text-base whitespace-nowrap leading-none">
-                  Family Node
+                  Family Nodes
                 </span>
               </Link>
               <nav className="flex flex-col gap-2">

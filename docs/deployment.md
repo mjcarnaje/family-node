@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide covers deploying Family Node to production using Vercel with a Neon PostgreSQL database.
+This guide covers deploying Family Nodes to production using Vercel with a Neon PostgreSQL database.
 
 ## Prerequisites
 
@@ -229,8 +229,8 @@ CMD ["node", ".output/server/index.mjs"]
 EOF
 
 # Build and run
-docker build -t family-node .
-docker run -p 3000:3000 --env-file .env family-node
+docker build -t family-nodes .
+docker run -p 3000:3000 --env-file .env family-nodes
 ```
 
 ## Production Checklist

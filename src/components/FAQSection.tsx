@@ -8,8 +8,8 @@ import { FadeIn } from "~/components/ui/fade-in";
 
 const faqs = [
   {
-    question: "What is Family Node?",
-    answer: "Family Node is a modern platform that allows you to build and visualize your family tree through an interactive, node-based interface. It's designed to make exploring your family history intuitive and engaging, while allowing you to preserve stories and media for future generations.",
+    question: "What is Family Nodes?",
+    answer: "Family Nodes is a modern platform that allows you to build and visualize your family tree through an interactive, node-based interface. It's designed to make exploring your family history intuitive and engaging, while allowing you to preserve stories and media for future generations.",
   },
   {
     question: "How secure is my family data?",
@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     question: "Can I share my tree with family members?",
-    answer: "Absolutely! Family Node is built for collaboration. You can invite family members to view your tree or grant them editing permissions so you can build your family legacy together in real-time.",
+    answer: "Absolutely! Family Nodes is built for collaboration. You can invite family members to view your tree or grant them editing permissions so you can build your family legacy together in real-time.",
   },
   {
     question: "What kind of media can I upload?",
@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     question: "How much does it cost?",
-    answer: "Family Node is completely free! There are no subscriptions, no hidden fees, and no limits. Build unlimited family trees with unlimited members, upload unlimited media, and enjoy all features at no cost.",
+    answer: "Family Nodes is completely free! There are no subscriptions, no hidden fees, and no limits. Build unlimited family trees with unlimited members, upload unlimited media, and enjoy all features at no cost.",
   },
   {
     question: "Is there a limit to how many people I can add?",
@@ -52,7 +52,7 @@ export function FAQSection() {
             </h2>
             <p className="text-lg text-muted-foreground sm:text-xl max-w-3xl mx-auto leading-relaxed font-serif italic">
               Everything you need to know about building, preserving, and sharing 
-              your family history with Family Node.
+              your family history with Family Nodes.
             </p>
           </div>
         </FadeIn>
