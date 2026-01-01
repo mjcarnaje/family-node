@@ -137,14 +137,13 @@ function ProfileSettings() {
         </PanelTitle>
       </PanelHeader>
       <PanelContent className="space-y-6">
-        {/* Profile Settings Row */}
-        <div className="flex items-start gap-6">
-          {/* Avatar Upload */}
-          <div className="flex flex-col items-center space-y-2">
-            <Label className="self-start">Profile Picture</Label>
+        {/* Avatar Upload */}
+        <div className="space-y-3">
+          <Label>Profile Picture</Label>
+          <div className="flex items-center gap-4">
             <div
               {...getRootProps()}
-              className={`relative cursor-pointer group w-20 h-20 ${
+              className={`relative cursor-pointer group shrink-0 ${
                 isUploading ? "cursor-not-allowed" : ""
               }`}
             >
@@ -172,55 +171,45 @@ function ProfileSettings() {
                 </div>
               )}
             </div>
-            <p className="text-xs text-muted-foreground text-center">
-              Click to upload
-              <br />
-              PNG, JPG, GIF up to 5MB
-            </p>
-          </div>
-
-          {/* Display Name */}
-          <div className="flex-1">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-2"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Display Name</FormLabel>
-                      <div className="flex gap-2">
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Enter your display name"
-                            disabled={updateProfileMutation.isPending}
-                          />
-                        </FormControl>
-                        <Button
-                          type="submit"
-                          disabled={
-                            updateProfileMutation.isPending ||
-                            !form.formState.isDirty ||
-                            !form.formState.isValid
-                          }
-                        >
-                          {updateProfileMutation.isPending
-                            ? "Saving..."
-                            : "Save"}
-                        </Button>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </form>
-            </Form>
+            <div className="text-sm text-muted-foreground">
+              <p>Click or drag to upload a new photo</p>
+              <p className="text-xs">PNG, JPG, GIF up to 5MB</p>
+            </div>
           </div>
         </div>
+
+        {/* Display Name */}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Display Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter your display name"
+                      disabled={updateProfileMutation.isPending}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              disabled={
+                updateProfileMutation.isPending ||
+                !form.formState.isDirty ||
+                !form.formState.isValid
+              }
+            >
+              {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </form>
+        </Form>
       </PanelContent>
     </Panel>
   );

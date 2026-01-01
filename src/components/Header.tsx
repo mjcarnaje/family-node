@@ -1,28 +1,21 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { authClient } from "~/lib/auth-client";
-import { ModeToggle } from "./mode-toggle";
-import { Button, buttonVariants } from "./ui/button";
 import {
+  Info,
+  LayoutDashboard,
   LogOut,
-  User,
   Menu,
   Settings,
-  LayoutDashboard,
   Star,
-  Info,
+  User,
   Zap,
 } from "lucide-react";
-
-function Logo({ className }: { className?: string }) {
-  return (
-    <img
-      src="/icon.svg"
-      alt="Family Nodes"
-      className={className}
-    />
-  );
-}
+import * as React from "react";
+import { useState } from "react";
+import { authClient } from "~/lib/auth-client";
+import { cn } from "~/lib/utils";
 import { UserAvatar } from "./UserAvatar";
+import { ModeToggle } from "./mode-toggle";
+import { Button, buttonVariants } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,15 +25,10 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { useState } from "react";
-import * as React from "react";
-import { cn } from "~/lib/utils";
 
-const dashboardLink = {
-  title: "Dashboard",
-  href: "/dashboard",
-  icon: LayoutDashboard,
-};
+function Logo({ className }: { className?: string }) {
+  return <img src="/icon.svg" alt="Family Nodes" className={className} />;
+}
 
 const navItems = [
   {
@@ -68,23 +56,24 @@ export function Header() {
     navigate({ to: "/" });
   };
 
-  const scrollToSection = (sectionId: string) => async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    if (currentPath !== "/") {
-      await navigate({ to: "/" });
-      setTimeout(() => {
+  const scrollToSection =
+    (sectionId: string) => async (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+      if (currentPath !== "/") {
+        await navigate({ to: "/" });
+        setTimeout(() => {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 100);
+      } else {
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: "smooth" });
         }
-      }, 100);
-    } else {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
       }
-    }
-  };
+    };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -97,41 +86,7 @@ export function Header() {
             </span>
           </Link>
 
-          {session ? (
-            <nav className="hidden md:flex items-center gap-2 text-sm">
-              <Link
-                to={dashboardLink.href}
-                className={`relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 group ${
-                  currentPath.startsWith("/dashboard")
-                    ? "text-foreground"
-                    : "text-foreground/70 hover:text-foreground"
-                }`}
-              >
-                <LayoutDashboard
-                  className={`h-4 w-4 relative z-10 transition-transform ${
-                    currentPath.startsWith("/dashboard")
-                      ? "scale-110"
-                      : "group-hover:scale-110"
-                  }`}
-                />
-                <span className="relative z-10">{dashboardLink.title}</span>
-                <span
-                  className={`absolute inset-0 rounded-lg bg-primary/5 transition-opacity duration-200 ${
-                    currentPath.startsWith("/dashboard")
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100"
-                  }`}
-                ></span>
-                <span
-                  className={`absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 blur-sm transition-opacity duration-200 ${
-                    currentPath.startsWith("/dashboard")
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100"
-                  }`}
-                ></span>
-              </Link>
-            </nav>
-          ) : (
+          {session ? null : (
             <nav className="hidden md:flex items-center gap-2 text-sm">
               <Link
                 to="/"
@@ -260,7 +215,10 @@ export function Header() {
                       <Link
                         to="/sign-in"
                         search={{ redirect: undefined }}
-                        className={cn(buttonVariants({ variant: "outline" }), "w-full justify-center")}
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "w-full justify-center"
+                        )}
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         Sign In
@@ -268,7 +226,10 @@ export function Header() {
                       <Link
                         to="/sign-up"
                         search={{ redirect: undefined }}
-                        className={cn(buttonVariants({ variant: "default" }), "w-full justify-center")}
+                        className={cn(
+                          buttonVariants({ variant: "default" }),
+                          "w-full justify-center"
+                        )}
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         Sign Up
@@ -317,11 +278,11 @@ export function Header() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link
-                        to="/profile/$userId"
+                        to="/dashboard"
                         params={{ userId: session.user.id }}
                       >
                         <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
+                        <span>Dashboard</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

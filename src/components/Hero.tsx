@@ -5,7 +5,7 @@ import { FadeIn } from "~/components/ui/fade-in";
 
 export function Hero() {
   return (
-    <section className="w-full relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+    <section className="w-full relative pt-32 pb-20 lg:pb-32 overflow-hidden">
       <div className="container mx-auto px-4 relative z-[2] flex flex-col">
         {/* Top notification banner */}
         <FadeIn delay={0} className="flex justify-center mb-8">
@@ -41,7 +41,11 @@ export function Hero() {
 
           <FadeIn delay={300}>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-              <Button size="lg" className="w-full sm:w-auto h-14 px-8 rounded-full bg-gradient-to-r from-primary to-purple-600 text-white font-bold hover:shadow-[0_0_40px_-10px_rgba(var(--primary),0.5)] transition-all transform hover:-translate-y-1 text-base" asChild>
+              <Button
+                size="lg"
+                className="w-full sm:w-auto h-14 px-8 rounded-full bg-gradient-to-r from-primary to-purple-600 text-white font-bold hover:shadow-[0_0_40px_-10px_rgba(var(--primary),0.5)] transition-all transform hover:-translate-y-1 text-base"
+                asChild
+              >
                 <Link to="/sign-up" search={{ redirect: undefined }}>
                   <Users className="mr-2 h-4 w-4" />
                   Start Your Tree for Free

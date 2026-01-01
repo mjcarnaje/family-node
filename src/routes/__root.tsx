@@ -196,11 +196,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-          <div className={`min-h-screen bg-background ${isDashboard ? "" : "pb-20"}`}>
-            <Header />
+          {isDashboard ? (
+            // Dashboard routes have their own layout with sidebar
             <main>{children}</main>
-            {!isDashboard && <Footer />}
-          </div>
+          ) : (
+            // Non-dashboard routes use the standard layout
+            <div className="min-h-screen bg-background pb-20">
+              <Header />
+              <main>{children}</main>
+              <Footer />
+            </div>
+          )}
           {import.meta.env.DEV && (
             <>
               <TanStackRouterDevtools position="bottom-right" />
