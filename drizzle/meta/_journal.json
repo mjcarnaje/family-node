@@ -57,6 +57,20 @@
       "when": 1767092400000,
       "tag": "0007_cloudinary_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1767200000000,
+      "tag": "0008_add_cover_image",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1767232400000,
+      "tag": "0009_add_public_access",
+      "breakpoints": true
     }
   ]
 }

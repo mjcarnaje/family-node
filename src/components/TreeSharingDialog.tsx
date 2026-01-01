@@ -1,8 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Users, Mail, UserPlus, Trash2, Crown, Edit, Eye, Shield, Info } from "lucide-react";
+import { Users, Trash2, Crown, Edit, Eye, Shield, Info, Link, Copy, Check } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,14 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -27,29 +17,25 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { Tooltip } from "~/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import {
   useTreeCollaborators,
   usePendingInvitations,
-  useSendInvitation,
+  useCreateInviteLink,
   useUpdateCollaboratorRole,
   useRemoveCollaborator,
   useCancelInvitation,
   useTreeAccess,
-  useTreePermissions,
 } from "~/hooks/useTreeSharing";
 import type { TreeCollaboratorRole } from "~/db/schema";
-import { ROLE_INFO, COLLABORATOR_ROLES, type TreeRole } from "~/lib/role-permissions";
+import { ROLE_INFO, COLLABORATOR_ROLES, INVITE_ROLES, type TreeRole, type InviteRole } from "~/lib/role-permissions";
 import { RoleBadge } from "~/components/RolePermissionsInfo";
-
-const inviteFormSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  role: z.enum(["viewer", "editor", "admin"]),
-});
-
-type InviteFormData = z.infer<typeof inviteFormSchema>;
+import { PublicAccessSection } from "~/components/PublicAccessSection";
 
 interface TreeSharingDialogProps {
   familyTreeId: string;
@@ -63,29 +49,38 @@ export function TreeSharingDialog({
   trigger,
 }: TreeSharingDialogProps) {
   const [open, setOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<InviteRole>("editor");
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const { data: access } = useTreeAccess(familyTreeId);
   const { data: collaborators, isLoading: loadingCollaborators } = useTreeCollaborators(familyTreeId);
-  const { data: invitations, isLoading: loadingInvitations } = usePendingInvitations(familyTreeId);
+  const { data: invitations } = usePendingInvitations(familyTreeId);
 
-  const sendInvitation = useSendInvitation(familyTreeId);
+  const createInviteLink = useCreateInviteLink(familyTreeId);
   const updateRole = useUpdateCollaboratorRole(familyTreeId);
   const removeCollaborator = useRemoveCollaborator(familyTreeId);
   const cancelInvitation = useCancelInvitation(familyTreeId);
 
-  const form = useForm<InviteFormData>({
-    resolver: zodResolver(inviteFormSchema),
-    defaultValues: {
-      email: "",
-      role: "viewer",
-    },
-  });
-
   const canManage = access?.canManage ?? false;
 
-  const onSubmit = async (data: InviteFormData) => {
-    await sendInvitation.mutateAsync(data);
-    form.reset();
+  const handleGenerateLink = async () => {
+    const result = await createInviteLink.mutateAsync(selectedRole);
+    setGeneratedLink(result.invitationLink);
+    setCopied(false);
+  };
+
+  const handleCopyLink = async () => {
+    if (!generatedLink) return;
+
+    try {
+      await navigator.clipboard.writeText(generatedLink);
+      setCopied(true);
+      toast.success("Invite link copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy link");
+    }
   };
 
   const handleRoleChange = async (userId: string, role: TreeCollaboratorRole) => {
@@ -148,7 +143,7 @@ export function TreeSharingDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
@@ -159,76 +154,95 @@ export function TreeSharingDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Invite Form */}
+        <div className="space-y-6 py-4 overflow-y-auto flex-1">
+          {/* Public Access Section */}
+          <PublicAccessSection
+            familyTreeId={familyTreeId}
+            canManage={canManage}
+          />
+
+          {/* Divider */}
           {canManage && (
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="flex gap-2">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                            <Input
-                              placeholder="Enter email address"
-                              className="pl-9"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="role"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-[110px]">
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {COLLABORATOR_ROLES.map((role) => (
-                              <SelectItem key={role} value={role}>
-                                <div className="flex items-center gap-2">
-                                  {getRoleIcon(role)}
-                                  {ROLE_INFO[role].label}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Collaborator Invites
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Invite Link Generator */}
+          {canManage && (
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Select
+                  value={selectedRole}
+                  onValueChange={(value: InviteRole) => {
+                    setSelectedRole(value);
+                    setGeneratedLink(null);
+                  }}
+                >
+                  <SelectTrigger className="w-[130px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {INVITE_ROLES.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        <div className="flex items-center gap-2">
+                          {getRoleIcon(role)}
+                          {ROLE_INFO[role].label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  onClick={handleGenerateLink}
+                  disabled={createInviteLink.isPending}
+                  className="flex-1"
+                >
+                  <Link className="mr-2 h-4 w-4" />
+                  {createInviteLink.isPending ? "Generating..." : "Generate Invite Link"}
+                </Button>
+              </div>
+
+              {generatedLink && (
+                <div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-3">
+                  <code className="flex-1 truncate text-sm text-muted-foreground">
+                    {generatedLink}
+                  </code>
                   <Button
-                    type="submit"
-                    disabled={sendInvitation.isPending}
-                    size="icon"
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCopyLink}
+                    className="shrink-0"
                   >
-                    <UserPlus className="h-4 w-4" />
+                    {copied ? (
+                      <>
+                        <Check className="mr-2 h-4 w-4 text-green-500" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy
+                      </>
+                    )}
                   </Button>
                 </div>
-              </form>
-            </Form>
+              )}
+            </div>
           )}
 
           {/* Pending Invitations */}
           {canManage && invitations && invitations.length > 0 && (
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-muted-foreground">
-                Pending Invitations
+                Pending Invite Links
               </h4>
               <div className="space-y-2">
                 {invitations.map((invitation) => (
@@ -237,17 +251,16 @@ export function TreeSharingDialog({
                     className="flex items-center justify-between rounded-lg border bg-muted/50 p-3"
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-muted text-xs">
-                          {invitation.inviteeEmail[0].toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                        <Link className="h-4 w-4 text-muted-foreground" />
+                      </div>
                       <div>
-                        <p className="text-sm font-medium">
-                          {invitation.inviteeEmail}
+                        <p className="text-sm font-medium flex items-center gap-2">
+                          {getRoleIcon(invitation.role)}
+                          {getRoleLabel(invitation.role)} invite
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Invited as {getRoleLabel(invitation.role)}
+                          Expires {new Date(invitation.expiresAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
@@ -332,11 +345,16 @@ export function TreeSharingDialog({
                           </Button>
                         </>
                       ) : (
-                        <Tooltip content={ROLE_INFO[collaborator.role].shortDescription}>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground cursor-help">
-                            {getRoleIcon(collaborator.role)}
-                            {getRoleLabel(collaborator.role)}
-                          </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground cursor-help">
+                              {getRoleIcon(collaborator.role)}
+                              {getRoleLabel(collaborator.role)}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {ROLE_INFO[collaborator.role].shortDescription}
+                          </TooltipContent>
                         </Tooltip>
                       )}
                     </div>
@@ -362,12 +380,17 @@ export function TreeSharingDialog({
           <div className="rounded-lg bg-muted/50 p-4 space-y-3">
             <div className="flex items-center gap-2">
               <h4 className="text-sm font-medium">Permission Levels</h4>
-              <Tooltip content="Each role has specific permissions that determine what actions users can perform on the family tree.">
-                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Each role has specific permissions that determine what actions users can perform on the family tree.
+                </TooltipContent>
               </Tooltip>
             </div>
             <div className="space-y-2 text-xs">
-              {COLLABORATOR_ROLES.map((role) => {
+              {INVITE_ROLES.map((role) => {
                 const info = ROLE_INFO[role];
                 return (
                   <div key={role} className="flex items-start gap-2">
@@ -385,6 +408,9 @@ export function TreeSharingDialog({
                   <span className="font-medium">{ROLE_INFO.owner.label}:</span>{" "}
                   <span className="text-muted-foreground">{ROLE_INFO.owner.shortDescription}</span>
                 </div>
+              </div>
+              <div className="pt-2 mt-2 border-t text-muted-foreground">
+                <span className="italic">Tip: Use the public link above to share view-only access with anyone.</span>
               </div>
             </div>
           </div>

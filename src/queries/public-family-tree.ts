@@ -1,5 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getPublicFamilyTreeFn, isTreePublicFn } from "~/fn/public-family-tree";
+import {
+  getPublicFamilyTreeFn,
+  isTreePublicFn,
+  getPublicTreeInfoBySlugFn,
+  getPublicAccessSettingsFn,
+} from "~/fn/public-family-tree";
 
 /**
  * Query options for getting public family tree visualization data
@@ -23,4 +28,27 @@ export const isTreePublicQueryOptions = (familyTreeId: string) =>
     queryFn: () => isTreePublicFn({ data: { familyTreeId } }),
     enabled: !!familyTreeId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
+
+/**
+ * Query options for getting public tree info by slug
+ * Returns basic info and whether PIN is required
+ */
+export const publicTreeInfoBySlugQueryOptions = (slug: string) =>
+  queryOptions({
+    queryKey: ["public-tree-info", slug],
+    queryFn: () => getPublicTreeInfoBySlugFn({ data: { slug } }),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
+
+/**
+ * Query options for getting public access settings (owner only)
+ */
+export const publicAccessSettingsQueryOptions = (familyTreeId: string) =>
+  queryOptions({
+    queryKey: ["public-access-settings", familyTreeId],
+    queryFn: () => getPublicAccessSettingsFn({ data: { familyTreeId } }),
+    enabled: !!familyTreeId,
+    staleTime: 1000 * 60 * 2, // Cache for 2 minutes
   });

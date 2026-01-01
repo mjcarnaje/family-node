@@ -490,6 +490,16 @@ export function getPermissionLabel(permission: Permission): string {
 export const COLLABORATOR_ROLES: TreeCollaboratorRole[] = ["viewer", "editor", "admin"];
 
 /**
+ * Roles available for invitations (excludes "viewer" - public viewing is via public link)
+ */
+export const INVITE_ROLES: TreeCollaboratorRole[] = ["editor", "admin"];
+
+/**
+ * Type for invite roles (editor or admin only)
+ */
+export type InviteRole = "editor" | "admin";
+
+/**
  * Utility object with common permission checks for convenience
  */
 export const CAN = {

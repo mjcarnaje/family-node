@@ -13,6 +13,7 @@ import {
   userHasTreeAccess,
   findPendingInvitationsByTreeId,
   findValidInvitationByToken,
+  findValidInvitationById,
   findInvitationsByEmail,
   createInvitation,
   acceptInvitation,
@@ -265,7 +266,8 @@ export const getMyPendingInvitationsFn = createServerFn({
     return enhancedInvitations;
   });
 
-// Send an invitation to join a tree
+// Send an invitation to join a tree (legacy - kept for backwards compatibility)
+// Note: Only editor and admin roles are available for invitations
 export const sendInvitationFn = createServerFn({
   method: "POST",
 })
@@ -273,7 +275,7 @@ export const sendInvitationFn = createServerFn({
     z.object({
       familyTreeId: z.string().min(1),
       email: z.string().email(),
-      role: z.enum(["viewer", "editor", "admin"]),
+      role: z.enum(["editor", "admin"]),
     })
   )
   .middleware([authenticatedMiddleware])
@@ -350,6 +352,53 @@ export const sendInvitationFn = createServerFn({
     return invitation;
   });
 
+// Create an invite link (without sending email)
+// Note: Only editor and admin roles are available for invitations
+// Viewing is handled via public links (when tree is public)
+export const createInviteLinkFn = createServerFn({
+  method: "POST",
+})
+  .inputValidator(
+    z.object({
+      familyTreeId: z.string().min(1),
+      role: z.enum(["editor", "admin"]),
+    })
+  )
+  .middleware([authenticatedMiddleware])
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+    const { familyTreeId, role } = data;
+
+    // Check if user can manage collaborators
+    const canManage = await userCanManageCollaborators(userId, familyTreeId);
+    if (!canManage) {
+      throw new Error("You do not have permission to invite collaborators to this tree");
+    }
+
+    // Create the invitation (expires in 7 days)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    const invitation = await createInvitation({
+      id: generateId(),
+      familyTreeId,
+      inviteeEmail: "", // Empty since this is a link-only invitation
+      role,
+      invitedByUserId: userId,
+      token: generateToken(),
+      expiresAt,
+    });
+
+    // Build the invitation link
+    const baseUrl = process.env.VITE_APP_URL || "http://localhost:3000";
+    const invitationLink = `${baseUrl}/invitation/${invitation.token}`;
+
+    return {
+      invitation,
+      invitationLink,
+    };
+  });
+
 // Accept an invitation
 export const acceptInvitationFn = createServerFn({
   method: "POST",
@@ -370,14 +419,15 @@ export const acceptInvitationFn = createServerFn({
       throw new Error("Invalid or expired invitation");
     }
 
-    // Get user email to verify invitation is for them
+    // Get user data
     const userData = await findUserById(userId);
     if (!userData) {
       throw new Error("User not found");
     }
 
-    // Verify the invitation email matches the user's email
-    if (invitation.inviteeEmail.toLowerCase() !== userData.email.toLowerCase()) {
+    // If invitation has a specific email, verify it matches the user's email
+    // Link-only invitations have empty email and can be accepted by anyone
+    if (invitation.inviteeEmail && invitation.inviteeEmail.toLowerCase() !== userData.email.toLowerCase()) {
       throw new Error("This invitation was sent to a different email address");
     }
 
@@ -416,20 +466,21 @@ export const acceptInvitationByIdFn = createServerFn({
     const { userId } = context;
     const { invitationId } = data;
 
-    // Find the invitation
-    const invitation = await findValidInvitationByToken(invitationId);
+    // Find the invitation by ID (not token)
+    const invitation = await findValidInvitationById(invitationId);
     if (!invitation) {
       throw new Error("Invalid or expired invitation");
     }
 
-    // Get user email to verify invitation is for them
+    // Get user data
     const userData = await findUserById(userId);
     if (!userData) {
       throw new Error("User not found");
     }
 
-    // Verify the invitation email matches the user's email
-    if (invitation.inviteeEmail.toLowerCase() !== userData.email.toLowerCase()) {
+    // If invitation has a specific email, verify it matches the user's email
+    // Link-only invitations have empty email and can be accepted by anyone
+    if (invitation.inviteeEmail && invitation.inviteeEmail.toLowerCase() !== userData.email.toLowerCase()) {
       throw new Error("This invitation was sent to a different email address");
     }
 
@@ -454,22 +505,22 @@ export const acceptInvitationByIdFn = createServerFn({
     return collaborator;
   });
 
-// Cancel/delete an invitation
+// Cancel/delete an invitation by token
 export const cancelInvitationFn = createServerFn({
   method: "POST",
 })
   .inputValidator(
     z.object({
-      invitationId: z.string().min(1),
+      token: z.string().min(1),
     })
   )
   .middleware([authenticatedMiddleware])
   .handler(async ({ data, context }) => {
     const { userId } = context;
-    const { invitationId } = data;
+    const { token } = data;
 
-    // Find the invitation to get the tree ID
-    const invitation = await findValidInvitationByToken(invitationId);
+    // Find the invitation by token
+    const invitation = await findValidInvitationByToken(token);
     if (!invitation) {
       throw new Error("Invitation not found");
     }

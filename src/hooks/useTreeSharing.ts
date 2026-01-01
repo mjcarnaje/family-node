@@ -15,11 +15,13 @@ import {
   updateCollaboratorRoleFn,
   removeCollaboratorFn,
   sendInvitationFn,
+  createInviteLinkFn,
   acceptInvitationFn,
   acceptInvitationByIdFn,
   cancelInvitationFn,
 } from "~/fn/tree-sharing";
 import type { TreeCollaboratorRole } from "~/db/schema";
+import type { InviteRole } from "~/lib/role-permissions";
 
 // ============================================
 // Query Hooks
@@ -137,12 +139,13 @@ export function useRemoveCollaborator(familyTreeId: string) {
   });
 }
 
-// Hook to send an invitation
+// Hook to send an invitation (legacy - with email)
+// Only editor and admin roles are available for invitations
 export function useSendInvitation(familyTreeId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { email: string; role: TreeCollaboratorRole }) =>
+    mutationFn: (data: { email: string; role: InviteRole }) =>
       sendInvitationFn({
         data: {
           familyTreeId,
@@ -156,6 +159,28 @@ export function useSendInvitation(familyTreeId: string) {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to send invitation");
+    },
+  });
+}
+
+// Hook to create an invite link (without sending email)
+// Only editor and admin roles are available for invitations
+export function useCreateInviteLink(familyTreeId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (role: InviteRole) =>
+      createInviteLinkFn({
+        data: {
+          familyTreeId,
+          role,
+        },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tree-invitations", familyTreeId] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to create invite link");
     },
   });
 }
@@ -200,14 +225,14 @@ export function useAcceptInvitationById() {
   });
 }
 
-// Hook to cancel an invitation
+// Hook to cancel an invitation by token
 export function useCancelInvitation(familyTreeId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (invitationId: string) =>
+    mutationFn: (token: string) =>
       cancelInvitationFn({
-        data: { invitationId },
+        data: { token },
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tree-invitations", familyTreeId] });

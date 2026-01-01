@@ -44,6 +44,19 @@ export async function findPublicFamilyTrees(): Promise<FamilyTree[]> {
     .where(eq(familyTree.isPublic, true));
 }
 
+// Find a family tree by its public slug
+export async function findFamilyTreeByPublicSlug(
+  slug: string
+): Promise<FamilyTree | null> {
+  const [result] = await database
+    .select()
+    .from(familyTree)
+    .where(eq(familyTree.publicSlug, slug))
+    .limit(1);
+
+  return result || null;
+}
+
 // Create a new family tree
 export async function createFamilyTree(
   data: CreateFamilyTreeData
@@ -114,9 +127,12 @@ export async function findFamilyTreesByOwnerIdWithMemberCount(
       id: familyTree.id,
       name: familyTree.name,
       description: familyTree.description,
+      coverImageUrl: familyTree.coverImageUrl,
       ownerId: familyTree.ownerId,
       isPublic: familyTree.isPublic,
       privacyLevel: familyTree.privacyLevel,
+      publicSlug: familyTree.publicSlug,
+      publicPin: familyTree.publicPin,
       createdAt: familyTree.createdAt,
       updatedAt: familyTree.updatedAt,
       memberCount: sql<number>`cast(count(${familyMember.id}) as integer)`,

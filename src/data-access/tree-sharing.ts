@@ -345,6 +345,25 @@ export async function findInvitationById(
   return result || null;
 }
 
+// Find valid (not expired, not accepted) invitation by ID
+export async function findValidInvitationById(
+  id: string
+): Promise<TreeAccessInvitation | null> {
+  const [result] = await database
+    .select()
+    .from(treeAccessInvitation)
+    .where(
+      and(
+        eq(treeAccessInvitation.id, id),
+        isNull(treeAccessInvitation.acceptedAt),
+        gt(treeAccessInvitation.expiresAt, new Date())
+      )
+    )
+    .limit(1);
+
+  return result || null;
+}
+
 // Find an invitation by token
 export async function findInvitationByToken(
   token: string

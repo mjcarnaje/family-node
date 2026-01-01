@@ -149,6 +149,7 @@ export const familyTree = pgTable(
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     description: text("description"),
+    coverImageUrl: text("cover_image_url"),
     ownerId: text("owner_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
@@ -159,6 +160,10 @@ export const familyTree = pgTable(
     privacyLevel: treePrivacyLevelEnum("privacy_level")
       .$default(() => "private")
       .notNull(),
+    // Public viewing: unique slug for public URL (e.g., /tree/public/abc123)
+    publicSlug: text("public_slug").unique(),
+    // Optional PIN code protection for public trees (stored as hash)
+    publicPin: text("public_pin"),
     createdAt: timestamp("created_at")
       .$defaultFn(() => new Date())
       .notNull(),
@@ -170,6 +175,7 @@ export const familyTree = pgTable(
     index("idx_family_tree_owner_id").on(table.ownerId),
     index("idx_family_tree_is_public").on(table.isPublic),
     index("idx_family_tree_privacy_level").on(table.privacyLevel),
+    index("idx_family_tree_public_slug").on(table.publicSlug),
   ]
 );
 
