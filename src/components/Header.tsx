@@ -86,37 +86,35 @@ export function Header() {
             </span>
           </Link>
 
-          {session ? null : (
-            <nav className="hidden md:flex items-center gap-2 text-sm">
-              <Link
-                to="/"
-                onClick={scrollToSection("features")}
-                className="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 group text-foreground/70 hover:text-foreground"
-              >
-                <span className="relative z-10">Features</span>
-                <span className="absolute inset-0 rounded-lg bg-primary/5 transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
-                <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 blur-sm transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
-              </Link>
-              <Link
-                to="/"
-                onClick={scrollToSection("how-it-works")}
-                className="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 group text-foreground/70 hover:text-foreground"
-              >
-                <span className="relative z-10">How It Works</span>
-                <span className="absolute inset-0 rounded-lg bg-primary/5 transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
-                <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 blur-sm transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
-              </Link>
-              <Link
-                to="/"
-                onClick={scrollToSection("faq")}
-                className="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 group text-foreground/70 hover:text-foreground"
-              >
-                <span className="relative z-10">FAQ</span>
-                <span className="absolute inset-0 rounded-lg bg-primary/5 transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
-                <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 blur-sm transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
-              </Link>
-            </nav>
-          )}
+          <nav className="hidden md:flex items-center gap-2 text-sm">
+            <Link
+              to="/"
+              onClick={scrollToSection("features")}
+              className="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 group text-foreground/70 hover:text-foreground"
+            >
+              <span className="relative z-10">Features</span>
+              <span className="absolute inset-0 rounded-lg bg-primary/5 transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
+              <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 blur-sm transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
+            </Link>
+            <Link
+              to="/"
+              onClick={scrollToSection("how-it-works")}
+              className="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 group text-foreground/70 hover:text-foreground"
+            >
+              <span className="relative z-10">How It Works</span>
+              <span className="absolute inset-0 rounded-lg bg-primary/5 transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
+              <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 blur-sm transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
+            </Link>
+            <Link
+              to="/"
+              onClick={scrollToSection("faq")}
+              className="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 group text-foreground/70 hover:text-foreground"
+            >
+              <span className="relative z-10">FAQ</span>
+              <span className="absolute inset-0 rounded-lg bg-primary/5 transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
+              <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 blur-sm transition-opacity duration-200 opacity-0 group-hover:opacity-100"></span>
+            </Link>
+          </nav>
         </div>
 
         {/* Mobile menu */}
