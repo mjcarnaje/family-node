@@ -2,7 +2,11 @@ import { useMemo } from "react";
 import { Users, Pencil, Clock, Activity } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
-import { Tooltip } from "~/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import type { Collaborator, EntityLock, TreeActivityItem } from "~/hooks/useCollaboration";
@@ -38,40 +42,47 @@ export function CollaboratorAvatars({
       <Users className="h-4 w-4 text-muted-foreground mr-1" />
       <div className="flex -space-x-2">
         {displayedCollaborators.map((collaborator) => (
-          <Tooltip
-            key={collaborator.user.id}
-            content={`${collaborator.user.name} - ${getStatusLabel(collaborator.status)}`}
-          >
-            <div className="relative">
-              <Avatar className="h-8 w-8 border-2 border-background">
-                {collaborator.user.image ? (
-                  <AvatarImage
-                    src={collaborator.user.image}
-                    alt={collaborator.user.name}
-                  />
-                ) : (
-                  <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                    {getInitials(collaborator.user.name)}
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              {/* Status indicator dot */}
-              <span
-                className={cn(
-                  "absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background",
-                  getStatusColor(collaborator.status)
-                )}
-              />
-            </div>
+          <Tooltip key={collaborator.user.id}>
+            <TooltipTrigger asChild>
+              <div className="relative">
+                <Avatar className="h-8 w-8 border-2 border-background">
+                  {collaborator.user.image ? (
+                    <AvatarImage
+                      src={collaborator.user.image}
+                      alt={collaborator.user.name}
+                    />
+                  ) : (
+                    <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                      {getInitials(collaborator.user.name)}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                {/* Status indicator dot */}
+                <span
+                  className={cn(
+                    "absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background",
+                    getStatusColor(collaborator.status)
+                  )}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              {collaborator.user.name} - {getStatusLabel(collaborator.status)}
+            </TooltipContent>
           </Tooltip>
         ))}
         {remainingCount > 0 && (
-          <Tooltip content={`${remainingCount} more collaborator${remainingCount > 1 ? "s" : ""}`}>
-            <Avatar className="h-8 w-8 border-2 border-background">
-              <AvatarFallback className="text-xs bg-muted">
-                +{remainingCount}
-              </AvatarFallback>
-            </Avatar>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Avatar className="h-8 w-8 border-2 border-background">
+                <AvatarFallback className="text-xs bg-muted">
+                  +{remainingCount}
+                </AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent>
+              {remainingCount} more collaborator{remainingCount > 1 ? "s" : ""}
+            </TooltipContent>
           </Tooltip>
         )}
       </div>
@@ -165,16 +176,19 @@ export function EntityLockIndicator({
   }
 
   return (
-    <Tooltip content={`Being edited by ${lock.lockedBy.name}`}>
-      <div
-        className={cn(
-          "flex items-center gap-1.5 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-md text-xs",
-          className
-        )}
-      >
-        <Pencil className="h-3 w-3" />
-        <span>{lock.lockedBy.name} is editing</span>
-      </div>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div
+          className={cn(
+            "flex items-center gap-1.5 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-md text-xs",
+            className
+          )}
+        >
+          <Pencil className="h-3 w-3" />
+          <span>{lock.lockedBy.name} is editing</span>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>Being edited by {lock.lockedBy.name}</TooltipContent>
     </Tooltip>
   );
 }
@@ -289,11 +303,16 @@ export function CollaborationStatusBadge({
         {isConnected ? "Live" : "Offline"}
       </div>
       {collaboratorCount > 0 && (
-        <Tooltip content={`${collaboratorCount} other collaborator${collaboratorCount > 1 ? "s" : ""} viewing`}>
-          <Badge variant="secondary" className="gap-1">
-            <Users className="h-3 w-3" />
-            {collaboratorCount}
-          </Badge>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="secondary" className="gap-1">
+              <Users className="h-3 w-3" />
+              {collaboratorCount}
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            {collaboratorCount} other collaborator{collaboratorCount > 1 ? "s" : ""} viewing
+          </TooltipContent>
         </Tooltip>
       )}
     </div>

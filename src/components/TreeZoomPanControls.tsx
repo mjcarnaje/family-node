@@ -9,7 +9,11 @@ import {
 } from "lucide-react";
 import { useReactFlow, useViewport } from "@xyflow/react";
 import { Button } from "~/components/ui/button";
-import { Tooltip } from "~/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { Slider } from "~/components/ui/slider";
 import { cn } from "~/lib/utils";
 
@@ -150,17 +154,20 @@ export function TreeZoomPanControls({
 
       {/* Zoom controls row */}
       <div className="flex items-center gap-2 mb-3">
-        <Tooltip content="Zoom out (-)">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleZoomOut}
-            className="h-8 w-8 p-0"
-            aria-label="Zoom out"
-            data-testid="zoom-out-button"
-          >
-            <ZoomOut className="h-4 w-4" />
-          </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomOut}
+              className="h-8 w-8 p-0"
+              aria-label="Zoom out"
+              data-testid="zoom-out-button"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Zoom out (-)</TooltipContent>
         </Tooltip>
 
         {/* Zoom slider */}
@@ -177,17 +184,20 @@ export function TreeZoomPanControls({
           />
         </div>
 
-        <Tooltip content="Zoom in (+)">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleZoomIn}
-            className="h-8 w-8 p-0"
-            aria-label="Zoom in"
-            data-testid="zoom-in-button"
-          >
-            <ZoomIn className="h-4 w-4" />
-          </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomIn}
+              className="h-8 w-8 p-0"
+              aria-label="Zoom in"
+              data-testid="zoom-in-button"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Zoom in (+)</TooltipContent>
         </Tooltip>
       </div>
 
@@ -203,68 +213,78 @@ export function TreeZoomPanControls({
 
       {/* Control buttons row */}
       <div className="grid grid-cols-2 gap-2">
-        <Tooltip content="Fit all members in view (0)">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleFitView}
-            className="h-8 text-xs"
-            aria-label="Fit view to all members"
-            data-testid="fit-view-button"
-          >
-            <Maximize className="h-3 w-3 mr-1" />
-            Fit All
-          </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleFitView}
+              className="h-8 text-xs"
+              aria-label="Fit view to all members"
+              data-testid="fit-view-button"
+            >
+              <Maximize className="h-3 w-3 mr-1" />
+              Fit All
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Fit all members in view (0)</TooltipContent>
         </Tooltip>
 
-        <Tooltip content="Reset zoom to 100%">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleResetZoom}
-            className="h-8 text-xs"
-            aria-label="Reset zoom to 100%"
-            data-testid="reset-zoom-button"
-          >
-            <RotateCcw className="h-3 w-3 mr-1" />
-            100%
-          </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResetZoom}
+              className="h-8 text-xs"
+              aria-label="Reset zoom to 100%"
+              data-testid="reset-zoom-button"
+            >
+              <RotateCcw className="h-3 w-3 mr-1" />
+              100%
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Reset zoom to 100%</TooltipContent>
         </Tooltip>
 
-        <Tooltip content="Enable pan mode to drag the view">
-          <Button
-            variant={panModeEnabled ? "default" : "outline"}
-            size="sm"
-            onClick={handleTogglePanMode}
-            className="h-8 text-xs"
-            aria-label={panModeEnabled ? "Disable pan mode" : "Enable pan mode"}
-            aria-pressed={panModeEnabled}
-            data-testid="pan-mode-button"
-          >
-            <Move className="h-3 w-3 mr-1" />
-            Pan
-          </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={panModeEnabled ? "default" : "outline"}
+              size="sm"
+              onClick={handleTogglePanMode}
+              className="h-8 text-xs"
+              aria-label={panModeEnabled ? "Disable pan mode" : "Enable pan mode"}
+              aria-pressed={panModeEnabled}
+              data-testid="pan-mode-button"
+            >
+              <Move className="h-3 w-3 mr-1" />
+              Pan
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Enable pan mode to drag the view</TooltipContent>
         </Tooltip>
 
-        <Tooltip
-          content={
-            focusedMemberId
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomToFocused}
+              disabled={!focusedMemberId}
+              className="h-8 text-xs"
+              aria-label="Zoom to focused member"
+              data-testid="zoom-to-focused-button"
+            >
+              <Target className="h-3 w-3 mr-1" />
+              Focus
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {focusedMemberId
               ? "Zoom to focused member"
-              : "Select a member first"
-          }
-        >
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleZoomToFocused}
-            disabled={!focusedMemberId}
-            className="h-8 text-xs"
-            aria-label="Zoom to focused member"
-            data-testid="zoom-to-focused-button"
-          >
-            <Target className="h-3 w-3 mr-1" />
-            Focus
-          </Button>
+              : "Select a member first"}
+          </TooltipContent>
         </Tooltip>
       </div>
 

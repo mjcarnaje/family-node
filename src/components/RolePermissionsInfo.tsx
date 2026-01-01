@@ -10,7 +10,11 @@ import {
   type Permission,
 } from "~/lib/role-permissions";
 import type { TreeCollaboratorRole } from "~/db/schema";
-import { Tooltip } from "~/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 const ROLE_ICONS: Record<TreeRole, React.ReactNode> = {
   viewer: <Eye className="h-4 w-4" />,
@@ -168,11 +172,14 @@ function RoleComparisonTable({ className }: { className: string }) {
             <th className="text-left py-2 pr-4 font-medium">Permission</th>
             {allRoles.map((role) => (
               <th key={role} className="text-center py-2 px-2">
-                <Tooltip content={ROLE_INFO[role].description}>
-                  <div className="flex flex-col items-center gap-1 cursor-help">
-                    <span className={ROLE_COLORS[role]}>{ROLE_ICONS[role]}</span>
-                    <span className="font-medium text-xs">{ROLE_INFO[role].label}</span>
-                  </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex flex-col items-center gap-1 cursor-help">
+                      <span className={ROLE_COLORS[role]}>{ROLE_ICONS[role]}</span>
+                      <span className="font-medium text-xs">{ROLE_INFO[role].label}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>{ROLE_INFO[role].description}</TooltipContent>
                 </Tooltip>
               </th>
             ))}
@@ -237,18 +244,23 @@ export function RoleBadge({
   };
 
   return (
-    <Tooltip content={`${info.label}: ${info.shortDescription}`}>
-      <span
-        className={`inline-flex items-center rounded-full bg-muted cursor-help ${sizeClasses[size]}`}
-      >
-        <span className={ROLE_COLORS[role]}>
-          {role === "viewer" && <Eye className={iconSizes[size]} />}
-          {role === "editor" && <Pencil className={iconSizes[size]} />}
-          {role === "admin" && <Shield className={iconSizes[size]} />}
-          {role === "owner" && <Crown className={iconSizes[size]} />}
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className={`inline-flex items-center rounded-full bg-muted cursor-help ${sizeClasses[size]}`}
+        >
+          <span className={ROLE_COLORS[role]}>
+            {role === "viewer" && <Eye className={iconSizes[size]} />}
+            {role === "editor" && <Pencil className={iconSizes[size]} />}
+            {role === "admin" && <Shield className={iconSizes[size]} />}
+            {role === "owner" && <Crown className={iconSizes[size]} />}
+          </span>
+          {showLabel && <span>{info.label}</span>}
         </span>
-        {showLabel && <span>{info.label}</span>}
-      </span>
+      </TooltipTrigger>
+      <TooltipContent>
+        {info.label}: {info.shortDescription}
+      </TooltipContent>
     </Tooltip>
   );
 }
