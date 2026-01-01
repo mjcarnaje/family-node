@@ -20,7 +20,7 @@ export function UserAvatarLink({
 }: UserAvatarLinkProps) {
   return (
     <Link
-      to="/profile/$userId"
+      to="/dashboard/profile/$userId"
       params={{ userId }}
       className={`inline-block hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-full ${className}`}
     >

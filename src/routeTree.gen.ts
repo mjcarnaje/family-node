@@ -20,10 +20,11 @@ import { Route as SitemapXmlRouteImport } from './routes/sitemap.xml'
 import { Route as InvitationTokenRouteImport } from './routes/invitation/$token'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard/analytics'
-import { Route as ProfileUserIdIndexRouteImport } from './routes/profile/$userId/index'
 import { Route as DashboardTreesIndexRouteImport } from './routes/dashboard/trees/index'
+import { Route as TreePublicSlugRouteImport } from './routes/tree/public/$slug'
 import { Route as DashboardTreesNewRouteImport } from './routes/dashboard/trees/new'
 import { Route as DashboardTreesTreeIdRouteImport } from './routes/dashboard/trees/$treeId'
+import { Route as DashboardProfileUserIdRouteImport } from './routes/dashboard/profile/$userId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiV1TreesIndexRouteImport } from './routes/api/v1/trees/index'
 import { Route as ApiV1FamilyMembersIndexRouteImport } from './routes/api/v1/family-members/index'
@@ -93,15 +94,15 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => DashboardRoute,
 } as any)
-const ProfileUserIdIndexRoute = ProfileUserIdIndexRouteImport.update({
-  id: '/profile/$userId/',
-  path: '/profile/$userId/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DashboardTreesIndexRoute = DashboardTreesIndexRouteImport.update({
   id: '/trees/',
   path: '/trees/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const TreePublicSlugRoute = TreePublicSlugRouteImport.update({
+  id: '/tree/public/$slug',
+  path: '/tree/public/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardTreesNewRoute = DashboardTreesNewRouteImport.update({
   id: '/trees/new',
@@ -111,6 +112,11 @@ const DashboardTreesNewRoute = DashboardTreesNewRouteImport.update({
 const DashboardTreesTreeIdRoute = DashboardTreesTreeIdRouteImport.update({
   id: '/trees/$treeId',
   path: '/trees/$treeId',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProfileUserIdRoute = DashboardProfileUserIdRouteImport.update({
+  id: '/profile/$userId',
+  path: '/profile/$userId',
   getParentRoute: () => DashboardRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -195,10 +201,11 @@ export interface FileRoutesByFullPath {
   '/tree/$treeId': typeof TreeTreeIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/dashboard/profile/$userId': typeof DashboardProfileUserIdRoute
   '/dashboard/trees/$treeId': typeof DashboardTreesTreeIdRoute
   '/dashboard/trees/new': typeof DashboardTreesNewRoute
+  '/tree/public/$slug': typeof TreePublicSlugRoute
   '/dashboard/trees': typeof DashboardTreesIndexRoute
-  '/profile/$userId': typeof ProfileUserIdIndexRoute
   '/api/v1/family-members/$id': typeof ApiV1FamilyMembersIdRoute
   '/api/v1/genealogy/services': typeof ApiV1GenealogyServicesRoute
   '/api/v1/trees/$id': typeof ApiV1TreesIdRouteWithChildren
@@ -224,10 +231,11 @@ export interface FileRoutesByTo {
   '/tree/$treeId': typeof TreeTreeIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/dashboard/profile/$userId': typeof DashboardProfileUserIdRoute
   '/dashboard/trees/$treeId': typeof DashboardTreesTreeIdRoute
   '/dashboard/trees/new': typeof DashboardTreesNewRoute
+  '/tree/public/$slug': typeof TreePublicSlugRoute
   '/dashboard/trees': typeof DashboardTreesIndexRoute
-  '/profile/$userId': typeof ProfileUserIdIndexRoute
   '/api/v1/family-members/$id': typeof ApiV1FamilyMembersIdRoute
   '/api/v1/genealogy/services': typeof ApiV1GenealogyServicesRoute
   '/api/v1/trees/$id': typeof ApiV1TreesIdRouteWithChildren
@@ -255,10 +263,11 @@ export interface FileRoutesById {
   '/tree/$treeId': typeof TreeTreeIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/dashboard/profile/$userId': typeof DashboardProfileUserIdRoute
   '/dashboard/trees/$treeId': typeof DashboardTreesTreeIdRoute
   '/dashboard/trees/new': typeof DashboardTreesNewRoute
+  '/tree/public/$slug': typeof TreePublicSlugRoute
   '/dashboard/trees/': typeof DashboardTreesIndexRoute
-  '/profile/$userId/': typeof ProfileUserIdIndexRoute
   '/api/v1/family-members/$id': typeof ApiV1FamilyMembersIdRoute
   '/api/v1/genealogy/services': typeof ApiV1GenealogyServicesRoute
   '/api/v1/trees/$id': typeof ApiV1TreesIdRouteWithChildren
@@ -287,10 +296,11 @@ export interface FileRouteTypes {
     | '/tree/$treeId'
     | '/dashboard/'
     | '/api/auth/$'
+    | '/dashboard/profile/$userId'
     | '/dashboard/trees/$treeId'
     | '/dashboard/trees/new'
+    | '/tree/public/$slug'
     | '/dashboard/trees'
-    | '/profile/$userId'
     | '/api/v1/family-members/$id'
     | '/api/v1/genealogy/services'
     | '/api/v1/trees/$id'
@@ -316,10 +326,11 @@ export interface FileRouteTypes {
     | '/tree/$treeId'
     | '/dashboard'
     | '/api/auth/$'
+    | '/dashboard/profile/$userId'
     | '/dashboard/trees/$treeId'
     | '/dashboard/trees/new'
+    | '/tree/public/$slug'
     | '/dashboard/trees'
-    | '/profile/$userId'
     | '/api/v1/family-members/$id'
     | '/api/v1/genealogy/services'
     | '/api/v1/trees/$id'
@@ -346,10 +357,11 @@ export interface FileRouteTypes {
     | '/tree/$treeId'
     | '/dashboard/'
     | '/api/auth/$'
+    | '/dashboard/profile/$userId'
     | '/dashboard/trees/$treeId'
     | '/dashboard/trees/new'
+    | '/tree/public/$slug'
     | '/dashboard/trees/'
-    | '/profile/$userId/'
     | '/api/v1/family-members/$id'
     | '/api/v1/genealogy/services'
     | '/api/v1/trees/$id'
@@ -374,7 +386,7 @@ export interface RootRouteChildren {
   SitemapXmlRoute: typeof SitemapXmlRoute
   TreeTreeIdRoute: typeof TreeTreeIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  ProfileUserIdIndexRoute: typeof ProfileUserIdIndexRoute
+  TreePublicSlugRoute: typeof TreePublicSlugRoute
   ApiV1FamilyMembersIdRoute: typeof ApiV1FamilyMembersIdRoute
   ApiV1GenealogyServicesRoute: typeof ApiV1GenealogyServicesRoute
   ApiV1TreesIdRoute: typeof ApiV1TreesIdRouteWithChildren
@@ -462,19 +474,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/profile/$userId/': {
-      id: '/profile/$userId/'
-      path: '/profile/$userId'
-      fullPath: '/profile/$userId'
-      preLoaderRoute: typeof ProfileUserIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dashboard/trees/': {
       id: '/dashboard/trees/'
       path: '/trees'
       fullPath: '/dashboard/trees'
       preLoaderRoute: typeof DashboardTreesIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/tree/public/$slug': {
+      id: '/tree/public/$slug'
+      path: '/tree/public/$slug'
+      fullPath: '/tree/public/$slug'
+      preLoaderRoute: typeof TreePublicSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/trees/new': {
       id: '/dashboard/trees/new'
@@ -488,6 +500,13 @@ declare module '@tanstack/react-router' {
       path: '/trees/$treeId'
       fullPath: '/dashboard/trees/$treeId'
       preLoaderRoute: typeof DashboardTreesTreeIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/profile/$userId': {
+      id: '/dashboard/profile/$userId'
+      path: '/profile/$userId'
+      fullPath: '/dashboard/profile/$userId'
+      preLoaderRoute: typeof DashboardProfileUserIdRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/api/auth/$': {
@@ -588,6 +607,7 @@ interface DashboardRouteChildren {
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardProfileUserIdRoute: typeof DashboardProfileUserIdRoute
   DashboardTreesTreeIdRoute: typeof DashboardTreesTreeIdRoute
   DashboardTreesNewRoute: typeof DashboardTreesNewRoute
   DashboardTreesIndexRoute: typeof DashboardTreesIndexRoute
@@ -598,6 +618,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardProfileUserIdRoute: DashboardProfileUserIdRoute,
   DashboardTreesTreeIdRoute: DashboardTreesTreeIdRoute,
   DashboardTreesNewRoute: DashboardTreesNewRoute,
   DashboardTreesIndexRoute: DashboardTreesIndexRoute,
@@ -639,7 +660,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapXmlRoute: SitemapXmlRoute,
   TreeTreeIdRoute: TreeTreeIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  ProfileUserIdIndexRoute: ProfileUserIdIndexRoute,
+  TreePublicSlugRoute: TreePublicSlugRoute,
   ApiV1FamilyMembersIdRoute: ApiV1FamilyMembersIdRoute,
   ApiV1GenealogyServicesRoute: ApiV1GenealogyServicesRoute,
   ApiV1TreesIdRoute: ApiV1TreesIdRouteWithChildren,

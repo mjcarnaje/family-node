@@ -17,7 +17,7 @@ import {
 } from "~/utils/seo";
 import type { PublicProfile } from "~/data-access/profiles";
 
-export const Route = createFileRoute("/profile/$userId/")({
+export const Route = createFileRoute("/dashboard/profile/$userId")({
   loader: async ({ context: { queryClient }, params: { userId } }) => {
     try {
       const data = await queryClient.fetchQuery(publicProfileQueryOptions(userId));
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/profile/$userId/")({
     const userName = profileData?.user?.name || "User Profile";
     const userBio = profileData?.profile?.bio;
     const userId = params.userId;
-    const profileUrl = `/profile/${userId}`;
+    const profileUrl = `/dashboard/profile/${userId}`;
 
     const description = userBio
       ? `${userBio.slice(0, 150)}${userBio.length > 150 ? "..." : ""}`
@@ -59,6 +59,7 @@ export const Route = createFileRoute("/profile/$userId/")({
             }),
             breadcrumbSchema([
               { name: "Home", url: "/" },
+              { name: "Dashboard", url: "/dashboard" },
               { name: "Profiles" },
               { name: userName },
             ])
