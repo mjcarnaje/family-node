@@ -96,9 +96,22 @@ function TreeVisualizationPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
-      {/* Compact Header */}
-      <div className="flex-shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      {/* Header with optional Cover Photo */}
+      <div className="flex-shrink-0 border-b relative overflow-hidden">
+        {/* Cover Photo Background */}
+        {treeData?.tree?.coverImageUrl && (
+          <>
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${treeData.tree.coverImageUrl})` }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/90 to-background" />
+          </>
+        )}
+        {!treeData?.tree?.coverImageUrl && (
+          <div className="absolute inset-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" />
+        )}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 relative z-10">
           <div className="flex items-center justify-between gap-4">
             {/* Left: Navigation & Tree Info */}
             <div className="flex items-center gap-3 min-w-0">

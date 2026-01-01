@@ -89,17 +89,32 @@ function TreesListPage() {
             {trees.map((tree) => (
               <Panel
                 key={tree.id}
-                className="hover:shadow-lg hover:border-primary/40 transition-all duration-300 group hover:-translate-y-1"
+                className="hover:shadow-lg hover:border-primary/40 transition-all duration-300 group hover:-translate-y-1 overflow-hidden"
               >
                 <Link
                   to="/dashboard/trees/$treeId"
                   params={{ treeId: tree.id }}
                   className="block focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl"
                 >
-                  <PanelHeader className="pb-2">
+                  {/* Cover Image */}
+                  <div className="relative h-32 bg-gradient-to-br from-primary/20 via-purple-500/10 to-primary/5">
+                    {tree.coverImageUrl ? (
+                      <img
+                        src={tree.coverImageUrl}
+                        alt={`${tree.name} cover`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <TreeDeciduous className="h-12 w-12 text-primary/20" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                  </div>
+                  <PanelHeader className="pb-2 -mt-6 relative z-10">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                        <div className="p-2 rounded-lg bg-primary/10 text-primary border border-background shadow-sm">
                           <TreeDeciduous className="h-5 w-5" />
                         </div>
                         <PanelTitle className="text-lg group-hover:text-primary transition-colors">

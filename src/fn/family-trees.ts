@@ -21,6 +21,7 @@ const createFamilyTreeSchema = z.object({
     .max(2000, "Description must be less than 2000 characters")
     .nullable()
     .optional(),
+  coverImageUrl: z.string().url().nullable().optional(),
   isPublic: z.boolean().optional().default(false),
 });
 
@@ -36,6 +37,7 @@ const updateFamilyTreeSchema = z.object({
     .max(2000, "Description must be less than 2000 characters")
     .nullable()
     .optional(),
+  coverImageUrl: z.string().url().nullable().optional(),
   isPublic: z.boolean().optional(),
 });
 
@@ -54,6 +56,7 @@ export const createFamilyTreeFn = createServerFn({
       id: crypto.randomUUID(),
       name: data.name,
       description: data.description || null,
+      coverImageUrl: data.coverImageUrl || null,
       ownerId: context.userId,
       isPublic: data.isPublic ?? false,
     };
@@ -133,6 +136,7 @@ export const updateFamilyTreeFn = createServerFn({
     const updatedTree = await updateFamilyTree(id, {
       name: updateData.name,
       description: updateData.description,
+      coverImageUrl: updateData.coverImageUrl,
       isPublic: updateData.isPublic,
     });
 

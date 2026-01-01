@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, TreeDeciduous, Loader2 } from "lucide-react";
+import { useDropzone } from "react-dropzone";
+import { ArrowLeft, TreeDeciduous, Loader2, Upload, X, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -15,6 +16,8 @@ import {
   PanelContent,
 } from "~/components/ui/panel";
 import { createFamilyTreeFn } from "~/fn/family-trees";
+import { uploadToCloudinary } from "~/utils/storage";
+import { authClient } from "~/lib/auth-client";
 
 export const Route = createFileRoute("/dashboard/trees/new")({
   component: NewTreePage,
@@ -23,17 +26,80 @@ export const Route = createFileRoute("/dashboard/trees/new")({
 function NewTreePage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { data: session } = authClient.useSession();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(false);
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB");
+      return;
+    }
+
+    setCoverImage(file);
+    setCoverImagePreview(URL.createObjectURL(file));
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".jpeg", ".jpg", ".png", ".gif", ".webp"],
+    },
+    maxFiles: 1,
+  });
+
+  const removeCoverImage = () => {
+    if (coverImagePreview) {
+      URL.revokeObjectURL(coverImagePreview);
+    }
+    setCoverImage(null);
+    setCoverImagePreview(null);
+  };
 
   const createTree = useMutation({
     mutationFn: async () => {
+      let coverImageUrl: string | null = null;
+
+      // Upload cover image if selected
+      if (coverImage) {
+        setIsUploading(true);
+        try {
+          const userId = session?.user?.id;
+          if (!userId) {
+            throw new Error("User not authenticated");
+          }
+
+          const result = await uploadToCloudinary(coverImage, {
+            folder: `cover-images/${userId}`,
+            resourceType: "image",
+          });
+          coverImageUrl = result.secureUrl;
+        } catch (error) {
+          console.error("Cover image upload error:", error);
+          throw new Error("Failed to upload cover image");
+        } finally {
+          setIsUploading(false);
+        }
+      }
+
       return createFamilyTreeFn({
         data: {
           name: name.trim(),
           description: description.trim() || null,
+          coverImageUrl,
           isPublic,
         },
       });
@@ -61,6 +127,7 @@ function NewTreePage() {
   };
 
   const isValid = name.trim().length > 0;
+  const isPending = createTree.isPending || isUploading;
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -94,6 +161,58 @@ function NewTreePage() {
           </PanelHeader>
           <PanelContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Cover Image Upload */}
+              <div className="space-y-2">
+                <Label>Cover Photo</Label>
+                {coverImagePreview ? (
+                  <div className="relative rounded-lg overflow-hidden border">
+                    <img
+                      src={coverImagePreview}
+                      alt="Cover preview"
+                      className="w-full h-40 object-cover"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2 h-8 w-8"
+                      onClick={removeCoverImage}
+                      disabled={isPending}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div
+                    {...getRootProps()}
+                    className={`
+                      border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
+                      transition-colors duration-200
+                      ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"}
+                      ${isPending ? "cursor-not-allowed opacity-50" : ""}
+                    `}
+                  >
+                    <input {...getInputProps()} disabled={isPending} />
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="p-3 rounded-full bg-muted">
+                        <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {isDragActive ? "Drop the image here" : "Click or drag to upload"}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          PNG, JPG, GIF up to 5MB
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Optional: Add a cover photo to personalize your family tree
+                </p>
+              </div>
+
               {/* Name Field */}
               <div className="space-y-2">
                 <Label htmlFor="name">
@@ -105,7 +224,7 @@ function NewTreePage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   maxLength={200}
-                  disabled={createTree.isPending}
+                  disabled={isPending}
                 />
                 <p className="text-xs text-muted-foreground">
                   Choose a memorable name for your family tree
@@ -122,7 +241,7 @@ function NewTreePage() {
                   onChange={(e) => setDescription(e.target.value)}
                   maxLength={2000}
                   rows={4}
-                  disabled={createTree.isPending}
+                  disabled={isPending}
                 />
                 <p className="text-xs text-muted-foreground">
                   Optional: Add context about this family tree
@@ -143,7 +262,7 @@ function NewTreePage() {
                   id="public-toggle"
                   checked={isPublic}
                   onCheckedChange={setIsPublic}
-                  disabled={createTree.isPending}
+                  disabled={isPending}
                 />
               </div>
 
@@ -153,18 +272,18 @@ function NewTreePage() {
                   type="button"
                   variant="outline"
                   onClick={() => navigate({ to: "/dashboard/trees" })}
-                  disabled={createTree.isPending}
+                  disabled={isPending}
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  disabled={!isValid || createTree.isPending}
+                  disabled={!isValid || isPending}
                 >
-                  {createTree.isPending ? (
+                  {isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Creating...
+                      {isUploading ? "Uploading..." : "Creating..."}
                     </>
                   ) : (
                     <>

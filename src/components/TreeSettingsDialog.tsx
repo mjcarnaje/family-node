@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Settings, Trash2, Loader2, AlertTriangle } from "lucide-react";
+import { useDropzone } from "react-dropzone";
+import { Settings, Trash2, Loader2, AlertTriangle, ImageIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
@@ -28,6 +29,8 @@ import { Textarea } from "~/components/ui/textarea";
 import { Label } from "~/components/ui/label";
 import { Switch } from "~/components/ui/switch";
 import { updateFamilyTreeFn, deleteFamilyTreeFn } from "~/fn/family-trees";
+import { uploadToCloudinary } from "~/utils/storage";
+import { authClient } from "~/lib/auth-client";
 import type { FamilyTree } from "~/db/schema";
 
 interface TreeSettingsDialogProps {
@@ -37,14 +40,15 @@ interface TreeSettingsDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function TreeSettingsDialog({ 
-  tree, 
+export function TreeSettingsDialog({
+  tree,
   trigger,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
 }: TreeSettingsDialogProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { data: session } = authClient.useSession();
 
   const [internalOpen, setInternalOpen] = useState(false);
   const open = controlledOpen ?? internalOpen;
@@ -56,15 +60,81 @@ export function TreeSettingsDialog({
   const [name, setName] = useState(tree.name);
   const [description, setDescription] = useState(tree.description || "");
   const [isPublic, setIsPublic] = useState(tree.isPublic);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(tree.coverImageUrl || null);
+  const [newCoverImage, setNewCoverImage] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB");
+      return;
+    }
+
+    setNewCoverImage(file);
+    setCoverImagePreview(URL.createObjectURL(file));
+    // Clear the existing cover image URL since we have a new one
+    setCoverImageUrl(null);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".jpeg", ".jpg", ".png", ".gif", ".webp"],
+    },
+    maxFiles: 1,
+  });
+
+  const removeCoverImage = () => {
+    if (coverImagePreview) {
+      URL.revokeObjectURL(coverImagePreview);
+    }
+    setNewCoverImage(null);
+    setCoverImagePreview(null);
+    setCoverImageUrl(null);
+  };
 
   // Update mutation
   const updateTree = useMutation({
     mutationFn: async () => {
+      let finalCoverImageUrl: string | null = coverImageUrl;
+
+      // Upload new cover image if selected
+      if (newCoverImage) {
+        setIsUploading(true);
+        try {
+          const userId = session?.user?.id;
+          if (!userId) {
+            throw new Error("User not authenticated");
+          }
+
+          const result = await uploadToCloudinary(newCoverImage, {
+            folder: `cover-images/${userId}`,
+            resourceType: "image",
+          });
+          finalCoverImageUrl = result.secureUrl;
+        } catch (error) {
+          console.error("Cover image upload error:", error);
+          throw new Error("Failed to upload cover image");
+        } finally {
+          setIsUploading(false);
+        }
+      }
+
       return updateFamilyTreeFn({
         data: {
           id: tree.id,
           name: name.trim(),
           description: description.trim() || null,
+          coverImageUrl: finalCoverImageUrl,
           isPublic,
         },
       });
@@ -120,16 +190,28 @@ export function TreeSettingsDialog({
       setName(tree.name);
       setDescription(tree.description || "");
       setIsPublic(tree.isPublic);
+      setCoverImageUrl(tree.coverImageUrl || null);
+      setNewCoverImage(null);
+      setCoverImagePreview(null);
     }
     setOpen(newOpen);
   };
 
+  const coverImageChanged =
+    newCoverImage !== null ||
+    (coverImageUrl !== (tree.coverImageUrl || null));
+
   const hasChanges =
     name.trim() !== tree.name ||
     (description.trim() || null) !== tree.description ||
-    isPublic !== tree.isPublic;
+    isPublic !== tree.isPublic ||
+    coverImageChanged;
 
   const isValid = name.trim().length > 0;
+  const isPending = updateTree.isPending || isUploading;
+
+  // Determine what image to show
+  const displayImageUrl = coverImagePreview || coverImageUrl;
 
   return (
     <>
@@ -144,7 +226,7 @@ export function TreeSettingsDialog({
             )}
           </DialogTrigger>
         )}
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Tree Settings</DialogTitle>
             <DialogDescription>
@@ -153,6 +235,55 @@ export function TreeSettingsDialog({
           </DialogHeader>
 
           <form onSubmit={handleUpdate} className="space-y-6">
+            {/* Cover Image Upload */}
+            <div className="space-y-2">
+              <Label>Cover Photo</Label>
+              {displayImageUrl ? (
+                <div className="relative rounded-lg overflow-hidden border">
+                  <img
+                    src={displayImageUrl}
+                    alt="Cover preview"
+                    className="w-full h-32 object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2 h-8 w-8"
+                    onClick={removeCoverImage}
+                    disabled={isPending}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div
+                  {...getRootProps()}
+                  className={`
+                    border-2 border-dashed rounded-lg p-4 text-center cursor-pointer
+                    transition-colors duration-200
+                    ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"}
+                    ${isPending ? "cursor-not-allowed opacity-50" : ""}
+                  `}
+                >
+                  <input {...getInputProps()} disabled={isPending} />
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="p-2 rounded-full bg-muted">
+                      <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {isDragActive ? "Drop the image here" : "Click or drag to upload"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        PNG, JPG, GIF up to 5MB
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Name Field */}
             <div className="space-y-2">
               <Label htmlFor="settings-name">
@@ -164,7 +295,7 @@ export function TreeSettingsDialog({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={200}
-                disabled={updateTree.isPending}
+                disabled={isPending}
               />
             </div>
 
@@ -178,7 +309,7 @@ export function TreeSettingsDialog({
                 onChange={(e) => setDescription(e.target.value)}
                 maxLength={2000}
                 rows={3}
-                disabled={updateTree.isPending}
+                disabled={isPending}
               />
             </div>
 
@@ -196,7 +327,7 @@ export function TreeSettingsDialog({
                 id="settings-public"
                 checked={isPublic}
                 onCheckedChange={setIsPublic}
-                disabled={updateTree.isPending}
+                disabled={isPending}
               />
             </div>
 
@@ -214,7 +345,7 @@ export function TreeSettingsDialog({
                 variant="outline"
                 className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/50"
                 onClick={() => setDeleteDialogOpen(true)}
-                disabled={updateTree.isPending}
+                disabled={isPending}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete Tree
@@ -226,18 +357,18 @@ export function TreeSettingsDialog({
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                disabled={updateTree.isPending}
+                disabled={isPending}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                disabled={!isValid || !hasChanges || updateTree.isPending}
+                disabled={!isValid || !hasChanges || isPending}
               >
-                {updateTree.isPending ? (
+                {isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Saving...
+                    {isUploading ? "Uploading..." : "Saving..."}
                   </>
                 ) : (
                   "Save Changes"
